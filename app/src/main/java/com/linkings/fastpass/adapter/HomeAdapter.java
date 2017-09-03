@@ -15,7 +15,7 @@ import java.util.List;
 public class HomeAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> baseFragments;
-    private String[] title;
+    private String[] title; 
 
     public HomeAdapter(FragmentManager fm, List<Fragment> baseFragments, String[] title) {
         super(fm);
