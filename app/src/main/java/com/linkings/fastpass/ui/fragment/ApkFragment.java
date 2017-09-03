@@ -1,9 +1,18 @@
 package com.linkings.fastpass.ui.fragment;
 
+import android.support.v7.widget.RecyclerView;
+
 import com.linkings.fastpass.R;
+import com.linkings.fastpass.adapter.ApkAdapter;
 import com.linkings.fastpass.base.BaseFragment;
+import com.linkings.fastpass.model.Apk;
 import com.linkings.fastpass.presenter.ApkPresenter;
 import com.linkings.fastpass.ui.interfaces.IApkView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * Created by Lin on 2017/9/3.
@@ -13,6 +22,8 @@ import com.linkings.fastpass.ui.interfaces.IApkView;
 
 public class ApkFragment extends BaseFragment implements IApkView {
 
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerview;
     private ApkPresenter mApkPresenter;
 
     @Override
@@ -27,6 +38,7 @@ public class ApkFragment extends BaseFragment implements IApkView {
 
     @Override
     public void initView() {
-
+        List<Apk> mApks = new ArrayList<>();
+        ApkAdapter mApkAdapter = new ApkAdapter(mApks);
     }
 }
