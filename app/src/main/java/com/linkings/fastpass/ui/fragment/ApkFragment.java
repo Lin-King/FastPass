@@ -7,13 +7,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.adapter.ApkAdapter;
 import com.linkings.fastpass.base.BaseFragment;
 import com.linkings.fastpass.model.Apk;
 import com.linkings.fastpass.presenter.ApkPresenter;
 import com.linkings.fastpass.ui.interfaces.IApkView;
+import com.linkings.fastpass.utils.ToastUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class ApkFragment extends BaseFragment implements IApkView {
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
     private ApkPresenter mApkPresenter;
+    private List<Apk> mApks;
 
     @Override
     public int getLayoutRes() {
@@ -48,7 +52,7 @@ public class ApkFragment extends BaseFragment implements IApkView {
         PackageManager packageManager = null;
         packageManager = context.getPackageManager();
         List<PackageInfo> mAllPackages = packageManager.getInstalledPackages(0);
-        List<Apk> mApks = new ArrayList<>();
+        mApks = new ArrayList<>();
         for (int i = 0; i < mAllPackages.size(); i++) {
             PackageInfo packageInfo = mAllPackages.get(i);
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -68,6 +72,12 @@ public class ApkFragment extends BaseFragment implements IApkView {
             mRecyclerview.setLayoutManager(linearLayoutManager);
             ApkAdapter mApkAdapter = new ApkAdapter(mApks);
             mRecyclerview.setAdapter(mApkAdapter);
+            mApkAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    ToastUtil.show(context, mApks.get(position).getPath());
+                }
+            });
         }
     }
 }
