@@ -1,5 +1,7 @@
 package com.linkings.fastpass.model;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by Lin on 2017/9/3.
  * Time: 16:19
@@ -7,9 +9,41 @@ package com.linkings.fastpass.model;
  */
 
 public class Apk {
-    
-    private int pic;
+
+    private Drawable pic;
     private String name;
-    private String size;
-    
+    private long size;
+    private String path;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Drawable getPic() {
+        return pic;
+    }
+
+    public void setPic(Drawable pic) {
+        this.pic = pic;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
 }
