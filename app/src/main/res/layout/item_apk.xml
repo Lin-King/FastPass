@@ -2,15 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:padding="10dp"
+              android:layout_marginLeft="10dp"
+              android:layout_marginRight="10dp"
+              android:layout_marginStart="10dp"
+              android:layout_marginTop="15dp"
               android:gravity="center"
               android:orientation="vertical">
 
     <ImageView
-        android:layout_marginTop="10dp"
         android:id="@+id/iv_icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:contentDescription="@string/icon"/>
 
     <TextView
@@ -25,7 +27,7 @@
         android:id="@+id/tv_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#5000"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp"
+        android:textColor="#5000"/>
 
 </LinearLayout>
