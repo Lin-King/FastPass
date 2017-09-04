@@ -1,9 +1,9 @@
 package com.linkings.fastpass.ui.activity;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +19,7 @@ import com.linkings.fastpass.adapter.HomeAdapter;
 import com.linkings.fastpass.base.BaseActivity;
 import com.linkings.fastpass.presenter.HomePresenter;
 import com.linkings.fastpass.ui.interfaces.IHomeView;
+import com.linkings.fastpass.utils.DialogUtil;
 
 import java.util.List;
 
@@ -116,7 +117,18 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     @OnClick(R.id.fab)
     public void onViewClicked() {
-        Snackbar.make(mFab, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        DialogUtil.showDoubleDialog(context, "", "选择", "发送", "接受", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                
+            }
+        });
+//        Snackbar.make(mFab, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 
     @Override

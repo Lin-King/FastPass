@@ -8,6 +8,7 @@
     
     <string name="application">应用</string>
     <string name="video">视频</string>
+    <string name="music">音乐</string>
     <string name="picture">图片</string>
     <string name="file">文件</string>
     <string name="icon">icon</string>

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -49,15 +48,14 @@ public class ApkFragment extends BaseFragment implements IApkView {
 
     @Override
     public void initView() {
-        PackageManager packageManager = null;
-        packageManager = context.getPackageManager();
+        PackageManager packageManager = context.getPackageManager();
         List<PackageInfo> mAllPackages = packageManager.getInstalledPackages(0);
         mApks = new ArrayList<>();
         for (int i = 0; i < mAllPackages.size(); i++) {
             PackageInfo packageInfo = mAllPackages.get(i);
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                Log.i("Lin", "package path : " + packageInfo.applicationInfo.sourceDir);
-                Log.i("Lin", "apk name : " + packageInfo.applicationInfo.loadLabel(packageManager));
+//                Log.i("Lin", "package path : " + packageInfo.applicationInfo.sourceDir);
+//                Log.i("Lin", "apk name : " + packageInfo.applicationInfo.loadLabel(packageManager));
                 Apk mApk = new Apk();
                 mApk.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
                 mApk.setPath(packageInfo.applicationInfo.sourceDir);
@@ -80,4 +78,6 @@ public class ApkFragment extends BaseFragment implements IApkView {
             });
         }
     }
+    
+    
 }
