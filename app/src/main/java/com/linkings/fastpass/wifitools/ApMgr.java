@@ -6,6 +6,8 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 
+import com.linkings.fastpass.utils.LogUtil;
+
 import java.lang.reflect.Method;
 
 /**
@@ -54,25 +56,23 @@ public class ApMgr {
         if (TextUtils.isEmpty(SSID)) {
             return false;
         }
-
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         if (wifimanager.isWifiEnabled()) {
             wifimanager.setWifiEnabled(false);
         }
-
         WifiConfiguration wifiConfiguration = getApConfig(SSID, password);
         try {
             if (isApOn(context)) {
                 wifimanager.setWifiEnabled(false);
                 closeAp(context);
             }
-
             //使用反射开启Wi-Fi热点
             Method method = wifimanager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
             method.invoke(wifimanager, wifiConfiguration, true);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            LogUtil.e(e + "");
         }
         return false;
     }

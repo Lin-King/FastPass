@@ -7,6 +7,11 @@ package com.linkings.fastpass.config;
  */
 
 public class Constant {
+
+    /**
+     * 默认的Wifi SSID
+     */
+    public static final String DEFAULT_SSID = "FastPass";
     
     /**
      * UDP通信服务 默认端口

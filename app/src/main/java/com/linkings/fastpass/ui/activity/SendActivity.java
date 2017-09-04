@@ -1,13 +1,16 @@
 package com.linkings.fastpass.ui.activity;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.app.MyApplication;
@@ -16,6 +19,7 @@ import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.presenter.SendPresenter;
 import com.linkings.fastpass.ui.interfaces.ISendView;
 import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
 import com.linkings.fastpass.wifitools.ApMgr;
 import com.linkings.fastpass.wifitools.WifiMgr;
@@ -45,17 +49,27 @@ public class SendActivity extends BaseActivity implements ISendView {
 
     @Override
     public void initView() {
-        //Android 6.0 扫描wifi 需要开启定位
-        if (Build.VERSION.SDK_INT >= 23) { //Android 6.0 扫描wifi 需要开启定位
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission_group.LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // 获取wifi连接需要定位权限,没有获取权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.WRITE_SETTINGS,
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_WIFI_STATE,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                 }, 0);
-                return;
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+//                intent.setData(Uri.parse("package:" + getPackageName()));
+//                startActivityForResult(intent, 0);
+//            } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS}, 0);
+//            }
         }
         if (WifiMgr.getInstance(context).isWifiEnabled()) {//wifi未打开的情况
             WifiMgr.getInstance(context).closeWifi();
@@ -65,7 +79,6 @@ public class SendActivity extends BaseActivity implements ISendView {
         if (ApMgr.isApOn(context)) {
             ApMgr.closeAp(context);
         }
-
         mWifiAPBroadcastReceiver = new WifiAPBroadcastReceiver() {
             @Override
             public void onWifiApEnabled() {
@@ -86,6 +99,9 @@ public class SendActivity extends BaseActivity implements ISendView {
         };
         IntentFilter filter = new IntentFilter(WifiAPBroadcastReceiver.ACTION_WIFI_AP_STATE_CHANGED);
         registerReceiver(mWifiAPBroadcastReceiver, filter);
+        String ssid = TextUtils.isEmpty(android.os.Build.DEVICE) ? Constant.DEFAULT_SSID : android.os.Build.DEVICE;
+        boolean b = ApMgr.openAp(context, ssid, "");
+        LogUtil.i(b + "");
     }
 
     @Override
@@ -101,6 +117,7 @@ public class SendActivity extends BaseActivity implements ISendView {
     /**
      * 创建发送UDP消息到 文件发送方 的服务线程
      */
+
     private Runnable createSendMsgToFileSenderRunnable() {
         return new Runnable() {
             @Override
@@ -168,4 +185,23 @@ public class SendActivity extends BaseActivity implements ISendView {
         }
     }
 
+    public static void startActivity(Activity srcActivity) {
+        Intent intent = new Intent(srcActivity, SendActivity.class);
+        srcActivity.startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ToastUtil.show(context, "s");
+                } else {
+                    ToastUtil.show(context, "f");
+                }
+                break;
+            }
+        }
+    }
 }

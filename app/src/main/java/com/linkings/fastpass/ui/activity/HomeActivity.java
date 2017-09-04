@@ -120,12 +120,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         DialogUtil.showDoubleDialog(context, "", "选择", "发送", "接受", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                
+                SendActivity.startActivity(HomeActivity.this);
             }
         }, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                
+                AcceptActivity.startActivity(HomeActivity.this);
             }
         });
 //        Snackbar.make(mFab, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
