@@ -6,6 +6,9 @@ import android.os.StrictMode;
 
 import com.orhanobut.logger.Logger;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * Created by Lin on 2017/2/21.
  * Time: 13:29
@@ -14,6 +17,10 @@ import com.orhanobut.logger.Logger;
 
 public class MyApplication extends Application {
     private static MyApplication mInstance;
+    /**
+     * 主要的线程池
+     */
+    public static Executor MAIN_EXECUTOR = Executors.newFixedThreadPool(5);
 
     public MyApplication() {
     }

@@ -10,6 +10,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.model.Apk;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,9 +32,32 @@ public class ApkAdapter extends BaseQuickAdapter<Apk, ApkAdapter.ViewHolder> {
     @Override
     protected void convert(ViewHolder helper, Apk item) {
         helper.mTvName.setText(item.getName());
-        String size = String.format("%.2f", item.getSize() / 1024f / 1024f) + "M" ;
+        String size = getFileSize(item.getSize());
+//        String size = String.format("%.2f", item.getSize() / 1024f / 1024f) + "M" ;
         helper.mTvSize.setText(size);
         helper.mIvIcon.setImageDrawable(item.getPic());
+    }
+
+    private static final DecimalFormat FORMAT = new DecimalFormat("####.##");
+
+    private static String getFileSize(long size) {
+        if (size < 0) { //小于0字节则返回0
+            return "0B";
+        }
+        double value;
+        if ((size / 1024) < 1) { //0 ` 1024 byte
+            return size + "B";
+        } else if ((size / (1024 * 1024)) < 1) {//0 ` 1024 kbyte
+
+            value = size / 1024f;
+            return FORMAT.format(value) + "KB";
+        } else if (size / (1024 * 1024 * 1024) < 1) {                  //0 ` 1024 mbyte
+            value = (size * 100 / (1024 * 1024)) / 100f;
+            return FORMAT.format(value) + "MB";
+        } else {                  //0 ` 1024 mbyte
+            value = (size * 100L / (1024L * 1024L * 1024L)) / 100f;
+            return FORMAT.format(value) + "GB";
+        }
     }
 
     static class ViewHolder extends BaseViewHolder {
