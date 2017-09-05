@@ -43,4 +43,5 @@ public class HomePresenter {
         };
         mHomeActivity.init(mList, title);
     }
+    
 }

@@ -16,7 +16,7 @@ public class Constant {
     /**
      * UDP通信服务 默认端口
      */
-    public static final int DEFAULT_SERVER_COM_PORT = 8099;
+    public static final int DEFAULT_SERVER_COM_PORT = 8989;
 
     /**
      * Wifi连接上时 未分配默认的Ip地址
@@ -33,4 +33,6 @@ public class Constant {
      */
     public static final String MSG_FILE_RECEIVER_INIT = "MSG_FILE_RECEIVER_INIT";
     public static final String MSG_FILE_RECEIVER_INIT_SUCCESS = "MSG_FILE_RECEIVER_INIT_SUCCESS";
+
+    public static final String KEY_IP_PORT_INFO = "KEY_IP_PORT_INFO";
 }

@@ -1,7 +1,10 @@
 package com.linkings.fastpass.ui.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -20,12 +23,21 @@ import com.linkings.fastpass.base.BaseActivity;
 import com.linkings.fastpass.presenter.HomePresenter;
 import com.linkings.fastpass.ui.interfaces.IHomeView;
 import com.linkings.fastpass.utils.DialogUtil;
+import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.wifitools.ApMgr;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 
+@RuntimePermissions
 public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, IHomeView {
 
     @BindView(R.id.toolbar)
@@ -45,8 +57,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void initView() {
         mHomePresenter.initToolbar();
-        mHomePresenter.init();
-
+        HomeActivityPermissionsDispatcher.needsWithCheck(this);
+//        if (MPermission.requestPermission(this, MPermission.PERMISSION_READ_EXTERNAL_STORAGE, CODE_READ_EXTERNAL_STORAGE)) {
+//            mHomePresenter.init();
+//        }
     }
 
     @Override
@@ -93,7 +107,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -135,9 +149,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public void initToolbar() {
         setSupportActionBar(mToolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            mDrawerLayout.setDrawerListener(toggle);
-        }
+        mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
         mNavView.setNavigationItemSelectedListener(this);
     }
@@ -147,5 +159,53 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         HomeAdapter mHomeAdapter = new HomeAdapter(getSupportFragmentManager(), mList, title);
         mVpHome.setAdapter(mHomeAdapter);
         mTlHome.setupWithViewPager(mVpHome);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (ApMgr.isApOn(context)) {
+            ApMgr.closeAp(context);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case CODE_READ_EXTERNAL_STORAGE: {
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    mHomePresenter.init();
+//                } else {
+//                    ToastUtil.show(context, "请开启该权限");
+//                }
+//                break;
+//            }
+//        }
+        HomeActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void needs() {
+        mHomePresenter.init();
+        LogUtil.i("needs");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @OnShowRationale({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void rationale(final PermissionRequest request) {
+        LogUtil.i("rationale");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @OnPermissionDenied({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void denied() {
+        LogUtil.i("denied");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @OnNeverAskAgain({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void neverAgain() {
+        LogUtil.i("neverAgain");
     }
 }

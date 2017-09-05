@@ -311,6 +311,24 @@ public class WifiMgr {
     }
 
     /**
+     * 开启热点之后，获取自身热点的IP地址
+     *
+     * @return
+     */
+    public String getHotspotLocalIpAddress() {
+        // WifiAP ip address is hardcoded in Android.
+        /* IP/netmask: 192.168.43.1/255.255.255.0 */
+        String ipAddress = "192.168.43.1";
+        DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+        int address = dhcpInfo.serverAddress;
+        ipAddress = ((address & 0xFF)
+                + "." + ((address >> 8) & 0xFF)
+                + "." + ((address >> 16) & 0xFF)
+                + "." + ((address >> 24) & 0xFF));
+        return ipAddress;
+    }
+
+    /**
      * 创建WifiConfiguration对象 分为三种情况：1没有密码;2用wep加密;3用wpa加密
      *
      * @param SSID
@@ -318,8 +336,7 @@ public class WifiMgr {
      * @param Type
      * @return
      */
-    public WifiConfiguration CreateWifiInfo(String SSID, String Password,
-                                            int Type) {
+    public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
         WifiConfiguration config = new WifiConfiguration();
         config.allowedAuthAlgorithms.clear();
         config.allowedGroupCiphers.clear();
@@ -415,13 +432,11 @@ public class WifiMgr {
         if (scanResults == null) {
             return result;
         }
-
         for (ScanResult scanResult : scanResults) {
             if (!TextUtils.isEmpty(scanResult.SSID) && scanResult.level > -80) {
                 result.add(scanResult);
             }
         }
-
         for (int i = 0; i < result.size(); i++) {
             for (int j = 0; j < result.size(); j++) {
                 //将搜索到的wifi根据信号强度从强到弱进行排序
