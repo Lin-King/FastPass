@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -170,53 +171,34 @@ public class WifiMgr {
      * @return
      * @throws InterruptedException
      */
-    public boolean connectWifi(final String ssid, final String pwd, List<ScanResult> scanResults) throws InterruptedException {
-        if (scanResults == null || scanResults.size() == 0) {
-            return false;
-        }
+    public boolean connectWifi(final String ssid, final String pwd, ScanResult scanResults) throws InterruptedException {
+        if (scanResults == null || isAdHoc(scanResults)) return false;
 
-        //匹配SSID相同的WiFi
-        ScanResult result = null;
-        for (ScanResult tmpResult : scanResults) {
-            if (tmpResult.SSID.equals(ssid)) {
-                result = tmpResult;
-                break;
-            }
-        }
-
-        if (result == null) {
-            return false;
-        }
-
-        if (isAdHoc(result)) {
-            return false;
-        }
-
-        final String security = Wifi.ConfigSec.getScanResultSecurity(result);
-        final WifiConfiguration config = Wifi.getWifiConfiguration(mWifiManager, result, security);
+        final String security = Wifi.ConfigSec.getScanResultSecurity(scanResults);
+        final WifiConfiguration config = Wifi.getWifiConfiguration(mWifiManager, scanResults, security);
 
         if (config == null) {
             //连接新WiFi
             boolean connResult;
             int numOpenNetworksKept = Settings.Secure.getInt(mContext.getContentResolver(), Settings.Secure.WIFI_NUM_OPEN_NETWORKS_KEPT, 10);
-            String scanResultSecurity = Wifi.ConfigSec.getScanResultSecurity(result);
+            String scanResultSecurity = Wifi.ConfigSec.getScanResultSecurity(scanResults);
             boolean isOpenNetwork = Wifi.ConfigSec.isOpenNetwork(scanResultSecurity);
             if (isOpenNetwork) {
-                connResult = Wifi.connectToNewNetwork(mContext, mWifiManager, result, null, numOpenNetworksKept);
+                connResult = Wifi.connectToNewNetwork(mContext, mWifiManager, scanResults, null, numOpenNetworksKept);
             } else {
-                connResult = Wifi.connectToNewNetwork(mContext, mWifiManager, result, pwd, numOpenNetworksKept);
+                connResult = Wifi.connectToNewNetwork(mContext, mWifiManager, scanResults, pwd, numOpenNetworksKept);
             }
             return connResult;
         } else {
             final boolean isCurrentNetwork_ConfigurationStatus = config.status == WifiConfiguration.Status.CURRENT;
             final WifiInfo info = mWifiManager.getConnectionInfo();
             final boolean isCurrentNetwork_WifiInfo = info != null
-                    && TextUtils.equals(info.getSSID(), result.SSID)
-                    && TextUtils.equals(info.getBSSID(), result.BSSID);
+                    && TextUtils.equals(info.getSSID(), scanResults.SSID)
+                    && TextUtils.equals(info.getBSSID(), scanResults.BSSID);
             if (!isCurrentNetwork_ConfigurationStatus && !isCurrentNetwork_WifiInfo) {
                 //连接已保存的WiFi
-                String scanResultSecurity = Wifi.ConfigSec.getScanResultSecurity(result);
-                final WifiConfiguration wcg = Wifi.getWifiConfiguration(mWifiManager, result, scanResultSecurity);
+                String scanResultSecurity = Wifi.ConfigSec.getScanResultSecurity(scanResults);
+                final WifiConfiguration wcg = Wifi.getWifiConfiguration(mWifiManager, scanResults, scanResultSecurity);
                 boolean connResult = false;
                 if (wcg != null) {
                     connResult = Wifi.connectToConfiguredNetwork(mContext, mWifiManager, wcg, false);
@@ -450,4 +432,30 @@ public class WifiMgr {
         return result;
     }
 
+    public boolean isNoPasswordWifi(ScanResult scanResult) {
+        return scanResult.capabilities != null && scanResult.capabilities.equals(NO_PASSWORD) || scanResult.capabilities != null && scanResult.capabilities.equals(NO_PASSWORD_WPS);
+    }
+
+    /**
+     * 判断指定的ipAddress是否可以ping
+     *
+     * @param ipAddress
+     * @return
+     */
+    public static boolean pingIpAddress(String ipAddress) {
+        try {
+            Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w 100 " + ipAddress);
+            int status = process.waitFor();
+            if (status == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
