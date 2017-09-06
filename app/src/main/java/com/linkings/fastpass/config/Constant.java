@@ -12,7 +12,7 @@ public class Constant {
      * 默认的Wifi SSID
      */
     public static final String DEFAULT_SSID = "FastPass";
-    
+
     /**
      * UDP通信服务 默认端口
      */
@@ -44,5 +44,27 @@ public class Constant {
      * UDP通知：开始发送文件
      */
     public static final String MSG_START_SEND = "MSG_START_SEND";
+
+    public static final String UTF8 = "UTF-8";
+
+    /**
+     * 更新进度条
+     */
+    public static final int MSG_UPDATE_PROGRESS = 0;
+
+    /**
+     * 更新列表适配器
+     */
+    public static final int MSG_UPDATE_ADAPTER = 1;
+
+    /**
+     * 接收端初始化成功
+     */
+    public static final int RECEIVER_INIT_SUCCESS = 2;
+
+    /**
+     * 设置当前状态
+     */
+    public static final int MSG_SET_STATUS = 3;
 
 }

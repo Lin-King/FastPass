@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,11 +24,17 @@ import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.widget.WifiBroadcaseReceiver;
 import com.linkings.fastpass.wifitools.WifiMgr;
 
+import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.linkings.fastpass.config.Constant.MSG_FILE_RECEIVER_INIT_SUCCESS;
+import static com.linkings.fastpass.config.Constant.RECEIVER_INIT_SUCCESS;
+import static com.linkings.fastpass.config.Constant.UTF8;
 
 /**
  * Created by Lin on 2017/9/4.
@@ -41,6 +49,31 @@ public class AcceptPresenter {
     private Runnable mUdpServerRuannable; //与 文件发送方 通信的 线程
     private DatagramSocket mDatagramSocket; //开启 文件发送方 通信服务 (必须在子线程执行)
 
+    private MyHandler mMyHandler = new MyHandler(acceptActivity);
+    private List<ScanResult> mWifiScanList;
+    private AcceptAdapter mAcceptAdapter;
+    private boolean firstConnect;
+    private String mSelectedSSID = "";
+
+    private static class MyHandler extends Handler {
+        private WeakReference<AcceptActivity> activityWeakReference;
+
+        MyHandler(AcceptActivity mAcceptPresenter) {
+            activityWeakReference = new WeakReference<>(mAcceptPresenter);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            AcceptActivity acceptActivity = activityWeakReference.get();
+            if (acceptActivity != null) {
+                switch (msg.what) {
+                    case RECEIVER_INIT_SUCCESS:
+                        break;
+                }
+            }
+        }
+    }
+
     public AcceptPresenter(AcceptActivity acceptActivity, RecyclerView recyclerview) {
         this.acceptActivity = acceptActivity;
         this.recyclerview = recyclerview;
@@ -53,55 +86,50 @@ public class AcceptPresenter {
         if (!mWifiMgr.isWifiEnabled()) {//wifi未打开的情况
             mWifiMgr.openWifi();
         }
-    }
-
-    private void getWifiList() {
-        try {
-            final List<ScanResult> wifiScanList = mWifiMgr.getWifiScanList();
-            AcceptAdapter acceptAdapter = new AcceptAdapter(wifiScanList);
-            recyclerview.setLayoutManager(new LinearLayoutManager(acceptActivity));
-            recyclerview.setAdapter(acceptAdapter);
-            acceptAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                    final ScanResult scanResult = wifiScanList.get(position);
-                    final String mSelectedSSID = scanResult.SSID;
-                    if (!WifiMgr.isNoPasswordWifi(scanResult)) {
-                        //弹出密码输入框
-                        showDialogWithEditText(mSelectedSSID, new OnWifiPasswordConfirmListener() {
-                            @Override
-                            public void onConfirm(String password) {
-                                //使用密码连接WiFi
-                                if (!TextUtils.isEmpty(password)) {
-                                    try {
-                                        ToastUtil.show(acceptActivity, "正在连接Wifi...");
-                                        mWifiMgr.connectWifi(mSelectedSSID, password, scanResult);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    ToastUtil.show(acceptActivity, "密码不能为空");
+        mWifiScanList = new ArrayList<>();
+        mAcceptAdapter = new AcceptAdapter(mWifiScanList);
+        recyclerview.setLayoutManager(new LinearLayoutManager(acceptActivity));
+        recyclerview.setAdapter(mAcceptAdapter);
+        mAcceptAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                final ScanResult scanResult = mWifiScanList.get(position);
+                mSelectedSSID = scanResult.SSID;
+//                LogUtil.i(mWifiMgr.getCurrentWifiInfo().getSSID());
+//                if (mWifiMgr.isWifiConnected(mWifiMgr.getCurrentWifiInfo().getSSID())) {
+//                    LogUtil.i("22222222222222222222");
+//                    mWifiBroadcaseReceiver.onWifiConnected(mSelectedSSID);
+//                    return;
+//                }
+                if (!WifiMgr.isNoPasswordWifi(scanResult)) {
+                    //弹出密码输入框
+                    showDialogWithEditText(mSelectedSSID, new OnWifiPasswordConfirmListener() {
+                        @Override
+                        public void onConfirm(String password) {
+                            //使用密码连接WiFi
+                            if (!TextUtils.isEmpty(password)) {
+                                try {
+                                    ToastUtil.show(acceptActivity, "正在连接Wifi...");
+                                    mWifiMgr.connectWifi(scanResult, password);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
                                 }
+                            } else {
+                                ToastUtil.show(acceptActivity, "密码不能为空");
                             }
-                        });
-                    } else {
-                        //连接免密码WiFi
-                        try {
-                            ToastUtil.show(acceptActivity, "正在连接Wifi...");
-                            mWifiMgr.connectWifi(mSelectedSSID, "", scanResult);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
+                    });
+                } else {
+                    //连接免密码WiFi
+                    try {
+                        ToastUtil.show(acceptActivity, "正在连接Wifi...");
+                        mWifiMgr.connectWifi(scanResult, "");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    //发送UDP通知信息到 文件接收方 开启ServerSocketRunnable
-                    mUdpServerRuannable = createSendMsgToServerRunnable(mWifiMgr.getIpAddressFromHotspot());
-                    MyApplication.MAIN_EXECUTOR.execute(mUdpServerRuannable);
-
                 }
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            }
+        });
     }
 
     /**
@@ -130,16 +158,14 @@ public class AcceptPresenter {
             @Override
             public void run() {
                 try {
-                    //确保WiFi连接后获取正确IP地址
                     int tryCount = 0;
                     String serverIp = mWifiMgr.getIpAddressFromHotspot();
                     while (serverIp.equals(Constant.DEFAULT_UNKOWN_IP) && tryCount < Constant.DEFAULT_TRY_TIME) {
                         Thread.sleep(1000);
                         serverIp = mWifiMgr.getIpAddressFromHotspot();
+                        LogUtil.i("receiver serverIp ----->>>" + serverIp);
                         tryCount++;
                     }
-
-                    //是否可以ping通指定IP地址
                     tryCount = 0;
                     while (!WifiMgr.pingIpAddress(serverIp) && tryCount < Constant.DEFAULT_TRY_TIME) {
                         Thread.sleep(500);
@@ -156,10 +182,10 @@ public class AcceptPresenter {
                     }
                     //发送初始化完毕指令
                     InetAddress ipAddress = InetAddress.getByName(serverIp);
-                    byte[] sendData = "MSG_FILE_RECEIVER_INIT_SUCCESS".getBytes("UTF-8");
+                    byte[] sendData = MSG_FILE_RECEIVER_INIT_SUCCESS.getBytes(UTF8);
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, Constant.DEFAULT_SERVER_COM_PORT);
                     mDatagramSocket.send(sendPacket);
-                    LogUtil.i("发送消息 ------->>>MSG_FILE_RECEIVER_INIT_SUCCESS");
+                    LogUtil.i("发送消息 ------->>>" + MSG_FILE_RECEIVER_INIT_SUCCESS);
 
                     //接收文件列表
                     //noinspection InfiniteLoopStatement
@@ -219,7 +245,7 @@ public class AcceptPresenter {
         public void onWifiEnabled() {
             //WiFi已开启，开始扫描可用WiFi
             LogUtil.i("WiFi已开启，开始扫描可用WiFi");
-            getWifiList();
+            mWifiMgr.startScan();
         }
 
         @Override
@@ -232,28 +258,20 @@ public class AcceptPresenter {
         public void onScanResultsAvailable(List<ScanResult> scanResults) {
             //扫描周围可用WiFi成功，设置可用WiFi列表
             LogUtil.i("扫描周围可用WiFi成功，设置可用WiFi列表");
+            refresh(scanResults);
         }
 
         @Override
         public void onWifiConnected(String connectedSSID) {
-            //判断指定WiFi是否连接成功
-            LogUtil.i("WiFi已开启，开始扫描可用WiFi");
-//            if (connectedSSID.equals(mSelectedSSID) && !mIsSendInitOrder) {
-//                //连接成功
-//                setStatus("Wifi连接成功...");
-//                //显示发送列表，隐藏WiFi选择列表
-//                mChooseHotspotRecyclerView.setVisibility(View.GONE);
-//                mReceiveFilesRecyclerView.setVisibility(View.VISIBLE);
-//
-//                //告知发送端，接收端初始化完毕
-//                mHandler.sendEmptyMessage(MSG_FILE_RECEIVER_INIT_SUCCESS);
-//                mIsSendInitOrder = true;
-//            } else {
-////                //连接成功的不是设备WiFi，清除该WiFi，重新扫描周围WiFi
-////                LogUtils.e("连接到错误WiFi，正在断开重连...");
-////                mWifiMgr.disconnectWifi(connectedSSID);
-////                mWifiMgr.startScan();
-//            }
+            if (connectedSSID.equals(mSelectedSSID) && !firstConnect) {
+                LogUtil.i("WiFi连接成功");
+                ToastUtil.show(acceptActivity, "Wifi连接成功...");
+                mMyHandler.sendEmptyMessage(RECEIVER_INIT_SUCCESS);
+                //发送UDP通知信息到 文件接收方 开启ServerSocketRunnable
+                mUdpServerRuannable = createSendMsgToServerRunnable(mWifiMgr.getIpAddressFromHotspot());
+                MyApplication.MAIN_EXECUTOR.execute(mUdpServerRuannable);
+                firstConnect = true;
+            }
         }
 
         @Override
@@ -261,6 +279,14 @@ public class AcceptPresenter {
 
         }
     };
+
+    private void refresh(List<ScanResult> scanResults) {
+        if (mWifiScanList != null && mAcceptAdapter != null) {
+            mWifiScanList.clear();
+            mWifiScanList.addAll(scanResults);
+            mAcceptAdapter.notifyDataSetChanged();
+        }
+    }
 
     /**
      * 注册监听WiFi操作的系统广播

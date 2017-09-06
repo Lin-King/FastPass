@@ -70,8 +70,6 @@ public class WifiMgr {
 
     /**
      * 清除指定网络
-     *
-     * @param SSID
      */
     public void clearWifiInfo(String SSID) {
         WifiConfiguration tempConfig = isExsits(SSID);
@@ -82,9 +80,6 @@ public class WifiMgr {
 
     /**
      * 判断当前网络是否WiFi
-     *
-     * @param context
-     * @return
      */
     public boolean isWifi(final Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -94,8 +89,6 @@ public class WifiMgr {
 
     /**
      * 扫描周围可用WiFi
-     *
-     * @return
      */
     public boolean startScan() {
         if (isWifiEnabled()) {
@@ -106,8 +99,6 @@ public class WifiMgr {
 
     /**
      * 获取周围可用WiFi扫描结果
-     *
-     * @return
      */
     public List<ScanResult> getScanResults() {
         List<ScanResult> scanResults = mWifiManager.getScanResults();
@@ -120,9 +111,6 @@ public class WifiMgr {
 
     /**
      * 获取周围信号强度大于-80的WiFi列表（Wifi强度为负数，值越大信号越好）
-     *
-     * @return
-     * @throws InterruptedException
      */
     public List<ScanResult> getWifiScanList() throws InterruptedException {
         List<ScanResult> resList = new ArrayList<ScanResult>();
@@ -130,7 +118,6 @@ public class WifiMgr {
             List<ScanResult> tmpList = mWifiManager.getScanResults();
             Thread.sleep(2000);
             if (tmpList != null && tmpList.size() > 0) {
-//				resList = sortByLevel(tmpList);
                 for (ScanResult scanResult : tmpList) {
                     if (scanResult.level > -80) {
                         resList.add(scanResult);
@@ -145,9 +132,6 @@ public class WifiMgr {
 
     /**
      * 判断当前WiFi是否正确连接指定WiFi
-     *
-     * @param SSID
-     * @return
      */
     public boolean isWifiConnected(String SSID) {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
@@ -156,8 +140,6 @@ public class WifiMgr {
 
     /**
      * 获取当前连接WiFi的SSID
-     *
-     * @return
      */
     public String getConnectedSSID() {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
@@ -166,14 +148,8 @@ public class WifiMgr {
 
     /**
      * 连接WiFi
-     *
-     * @param ssid
-     * @param pwd
-     * @param scanResults
-     * @return
-     * @throws InterruptedException
      */
-    public boolean connectWifi(final String ssid, final String pwd, ScanResult scanResults) throws InterruptedException {
+    public boolean connectWifi(ScanResult scanResults, final String pwd) throws InterruptedException {
         if (scanResults == null || isAdHoc(scanResults)) return false;
 
         final String security = Wifi.ConfigSec.getScanResultSecurity(scanResults);
@@ -215,8 +191,6 @@ public class WifiMgr {
 
     /**
      * 断开指定ID的网络
-     *
-     * @param SSID
      */
     public boolean disconnectWifi(String SSID) {
         return mWifiManager.disableNetwork(getNetworkIdBySSID(SSID)) && mWifiManager.disconnect();
@@ -224,8 +198,6 @@ public class WifiMgr {
 
     /**
      * 清除指定SSID的网络
-     *
-     * @param SSID
      */
     public void clearWifiConfig(String SSID) {
         SSID = SSID.replace("\"", "");
@@ -257,14 +229,11 @@ public class WifiMgr {
     }
 
     private boolean isAdHoc(final ScanResult scanResule) {
-        return scanResule.capabilities.indexOf("IBSS") != -1;
+        return scanResule.capabilities.contains("IBSS");
     }
 
     /**
      * 根据SSID查networkID
-     *
-     * @param SSID
-     * @return
      */
     public int getNetworkIdBySSID(String SSID) {
         if (TextUtils.isEmpty(SSID)) {
@@ -279,7 +248,6 @@ public class WifiMgr {
 
     /**
      * 获取连接WiFi后的IP地址主机
-     *
      */
     public String getIpAddressFromHotspot() {
         DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
@@ -307,8 +275,6 @@ public class WifiMgr {
 
     /**
      * 开启热点之后，获取自身热点的IP地址
-     *
-     * @return
      */
     public String getHotspotLocalIpAddress() {
         // WifiAP ip address is hardcoded in Android.
@@ -325,11 +291,6 @@ public class WifiMgr {
 
     /**
      * 创建WifiConfiguration对象 分为三种情况：1没有密码;2用wep加密;3用wpa加密
-     *
-     * @param SSID
-     * @param Password
-     * @param Type
-     * @return
      */
     public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
         WifiConfiguration config = new WifiConfiguration();
@@ -401,9 +362,6 @@ public class WifiMgr {
 
     /**
      * 获取指定WiFi信息
-     *
-     * @param SSID
-     * @return
      */
     private WifiConfiguration isExsits(String SSID) {
         List<WifiConfiguration> existingConfigs = mWifiManager.getConfiguredNetworks();
@@ -419,8 +377,6 @@ public class WifiMgr {
 
     /**
      * 过滤WiFi扫描结果
-     *
-     * @return
      */
     private List<ScanResult> filterScanResult(List<ScanResult> scanResults) {
         List<ScanResult> result = new ArrayList<>();
@@ -451,22 +407,13 @@ public class WifiMgr {
 
     /**
      * 判断指定的ipAddress是否可以ping
-     *
-     * @param ipAddress
-     * @return
      */
     public static boolean pingIpAddress(String ipAddress) {
         try {
             Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w 100 " + ipAddress);
             int status = process.waitFor();
-            if (status == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            return status == 0;
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;

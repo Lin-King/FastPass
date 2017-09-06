@@ -1,5 +1,10 @@
 package com.linkings.fastpass.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
+
 /**
  * Created by Lin on 2016/9/21.
  * Time: 17:22
@@ -162,4 +167,32 @@ public class TypeConvertUtil {
         return str;
     }
 
+     /**
+      * User: Lin
+      * Date: 2017/9/6 16:48
+      * Description: 对象转Json数据
+      */
+    public static <T> String toJsonStr(List<T> Object) {
+        return new Gson().toJson(Object);
+    }
+
+
+    /**
+     * User: Lin
+     * Date: 2017/9/6 16:48
+     * Description: Json数据转对象
+     */
+    public static <T> T toObject(String jsonStr, Class<T> mClass) {
+        return new Gson().fromJson(jsonStr, mClass);
+    }
+    
+    /**
+     * User: Lin
+     * Date: 2017/9/6 16:48
+     * Description: Json数据转对象集合
+     */
+    public static <T> List<T> toObjectList(String jsonStr) {
+        return new Gson().fromJson(jsonStr, new TypeToken<List<T>>() {
+        }.getType());
+    }
 }

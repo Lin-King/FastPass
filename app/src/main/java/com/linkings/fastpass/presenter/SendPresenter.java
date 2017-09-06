@@ -2,16 +2,15 @@ package com.linkings.fastpass.presenter;
 
 import android.content.IntentFilter;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
-import com.linkings.fastpass.model.IpPortInfo;
 import com.linkings.fastpass.ui.activity.SendActivity;
 import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
 import com.linkings.fastpass.wifitools.ApMgr;
 import com.linkings.fastpass.wifitools.WifiMgr;
@@ -21,6 +20,10 @@ import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+
+import static com.linkings.fastpass.config.Constant.MSG_FILE_RECEIVER_INIT_SUCCESS;
+import static com.linkings.fastpass.config.Constant.MSG_SET_STATUS;
+import static com.linkings.fastpass.config.Constant.UTF8;
 
 /**
  * Created by Lin on 2017/9/4.
@@ -32,16 +35,11 @@ public class SendPresenter {
 
     private WifiAPBroadcastReceiver mWifiAPBroadcastReceiver;
     private SendActivity sendActivity;
-    /**
-     * 与 文件发送方 通信的 线程
-     */
-    private Runnable mUdpServerRuannable;
+    private Runnable mUdpServerRuannable;//与 文件发送方 通信的 线程
     private boolean mIsInitialized;
     private DatagramSocket mDatagramSocket;
 
-    public static final int MSG_TO_FILE_RECEIVER_UI = 0X88;
-
-    MyHandler mMyHandler = new MyHandler(sendActivity);
+    private MyHandler mMyHandler = new MyHandler(sendActivity);
 
     private static class MyHandler extends Handler {
         private WeakReference<SendActivity> activityWeakReference;
@@ -54,13 +52,29 @@ public class SendPresenter {
         public void handleMessage(Message msg) {
             SendActivity mSendActivity = activityWeakReference.get();
             if (mSendActivity != null) {
-                if (msg.what == MSG_TO_FILE_RECEIVER_UI) {
-                    IpPortInfo ipPortInfo = (IpPortInfo) msg.obj;
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(Constant.KEY_IP_PORT_INFO, ipPortInfo);
-//                NavigatorUtils.toFileReceiverListUI(getContext(), bundle);
-//                finishNormal();
-                    LogUtil.i("跳转");
+                switch (msg.what) {
+                    case Constant.RECEIVER_INIT_SUCCESS:
+                        //接收端初始化完毕
+                        ToastUtil.show(mSendActivity, "接收端初始化成功...");
+                        //显示发送文件视图
+//                        initSendFilesLayout();
+                        break;
+                    case Constant.MSG_UPDATE_PROGRESS:
+                        //更新文件发送进度
+                        int position = msg.arg1;
+                        int progress = msg.arg2;
+//                        if (position >= 0 && position < mSendFileAdapter.getItemCount()) {
+//                            updateProgress(position, progress);
+//                        }
+                        break;
+                    case Constant.MSG_UPDATE_ADAPTER:
+                        //更新列表适配器
+//                        initSendFilesLayout();
+                        break;
+                    case MSG_SET_STATUS:
+                        //设置当前状态
+//                        setStatus(msg.obj.toString());
+                        break;
                 }
             }
         }
@@ -118,7 +132,6 @@ public class SendPresenter {
     private void startFileSendServer(int serverPort) throws Exception {
         //网络连接上，无法获取IP的问题
         int count = 0;
-//        String localAddress = WifiMgr.getWifiIP();
         String localAddress = WifiMgr.getInstance(sendActivity).getHotspotLocalIpAddress();
         LogUtil.i("receiver get local Ip ----->>>" + localAddress);
         while (localAddress.equals(Constant.DEFAULT_UNKOWN_IP) && count < Constant.DEFAULT_TRY_TIME) {
@@ -133,13 +146,13 @@ public class SendPresenter {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             mDatagramSocket.receive(receivePacket);
-            String response = new String(receivePacket.getData()).trim();
+            String response = new String(receivePacket.getData(), UTF8).trim();
             if (!TextUtils.isEmpty(response)) {
                 LogUtil.i("接收到的消息 -------->>>" + response);
                 switch (response) {
-                    case Constant.MSG_FILE_RECEIVER_INIT_SUCCESS:
+                    case MSG_FILE_RECEIVER_INIT_SUCCESS:
                         //初始化成功指令
-//                    mHandler.sendEmptyMessage(MSG_FILE_RECEIVER_INIT_SUCCESS);
+                        mMyHandler.sendEmptyMessage(Constant.RECEIVER_INIT_SUCCESS);
                         //发送文件列表
                         InetAddress inetAddress = receivePacket.getAddress();
                         int port = receivePacket.getPort();
@@ -170,11 +183,11 @@ public class SendPresenter {
         try {
             //发送文件列表
             mDatagramSocket.send(sendFileInfoPacket);
-            LogUtil.i("发送消息 --------->>>" + jsonStr + "=== Success!");
-//                mHandler.obtainMessage(MSG_SET_STATUS, "成功发送文件列表...").sendToTarget();
+            LogUtil.i("发送消息 --------->>>" + jsonStr + " === Success!");
+            mMyHandler.obtainMessage(MSG_SET_STATUS, "成功发送文件列表...").sendToTarget();
         } catch (IOException e) {
             e.printStackTrace();
-            LogUtil.i("发送消息 --------->>>" + jsonStr + "=== 失败！");
+            LogUtil.i("发送消息 --------->>>" + jsonStr + " === 失败！");
         }
 //        }
     }
