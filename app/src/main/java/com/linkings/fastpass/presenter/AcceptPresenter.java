@@ -83,9 +83,8 @@ public class AcceptPresenter {
         //开启WiFi，监听WiFi广播
         registerWifiReceiver();
         mWifiMgr = WifiMgr.getInstance(acceptActivity);
-        if (!mWifiMgr.isWifiEnabled()) {//wifi未打开的情况
-            mWifiMgr.openWifi();
-        }
+        if (!mWifiMgr.isWifiEnabled()) mWifiMgr.openWifi();
+        else clearWifiConfig();
         mWifiScanList = new ArrayList<>();
         mAcceptAdapter = new AcceptAdapter(mWifiScanList);
         recyclerview.setLayoutManager(new LinearLayoutManager(acceptActivity));
@@ -94,40 +93,27 @@ public class AcceptPresenter {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 final ScanResult scanResult = mWifiScanList.get(position);
+                final String[] passwordSSID = {""};
                 mSelectedSSID = scanResult.SSID;
-//                LogUtil.i(mWifiMgr.getCurrentWifiInfo().getSSID());
-//                if (mWifiMgr.isWifiConnected(mWifiMgr.getCurrentWifiInfo().getSSID())) {
-//                    LogUtil.i("22222222222222222222");
-//                    mWifiBroadcaseReceiver.onWifiConnected(mSelectedSSID);
-//                    return;
-//                }
                 if (!WifiMgr.isNoPasswordWifi(scanResult)) {
-                    //弹出密码输入框
                     showDialogWithEditText(mSelectedSSID, new OnWifiPasswordConfirmListener() {
                         @Override
                         public void onConfirm(String password) {
-                            //使用密码连接WiFi
-                            if (!TextUtils.isEmpty(password)) {
-                                try {
-                                    ToastUtil.show(acceptActivity, "正在连接Wifi...");
-                                    mWifiMgr.connectWifi(scanResult, password);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
+                            if (TextUtils.isEmpty(password)) {
                                 ToastUtil.show(acceptActivity, "密码不能为空");
+                                return;
                             }
+                            passwordSSID[0] = password;
                         }
                     });
-                } else {
-                    //连接免密码WiFi
-                    try {
-                        ToastUtil.show(acceptActivity, "正在连接Wifi...");
-                        mWifiMgr.connectWifi(scanResult, "");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
+                try {
+                    ToastUtil.show(acceptActivity, "正在连接Wifi...");
+                    mWifiMgr.connectWifi(scanResult, passwordSSID[0]);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
     }

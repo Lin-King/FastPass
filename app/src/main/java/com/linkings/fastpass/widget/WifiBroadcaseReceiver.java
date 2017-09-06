@@ -21,25 +21,25 @@ public abstract class WifiBroadcaseReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent != null) {
-            if(intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
+        if (intent != null) {
+            if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
                 //监听WiFi开启/关闭事件
                 int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
-                if(wifiState == WifiManager.WIFI_STATE_ENABLED) {
+                if (wifiState == WifiManager.WIFI_STATE_ENABLED) {
                     //WiFi已开启
                     onWifiEnabled();
-                } else if(wifiState == WifiManager.WIFI_STATE_DISABLED) {
+                } else if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
                     //WiFi已关闭
                     onWifiDisabled();
                 }
-            } else if(intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+            } else if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
                 WifiMgr wifiMgr = new WifiMgr(context);
                 List<ScanResult> scanResults = wifiMgr.getScanResults();
-                if(wifiMgr.isWifiEnabled() && scanResults != null && scanResults.size() > 0) {
+                if (wifiMgr.isWifiEnabled() && scanResults != null && scanResults.size() > 0) {
                     //成功扫描
                     onScanResultsAvailable(scanResults);
                 }
-            } else if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+            } else if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
                 //网络状态改变的广播
                 NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 if (info != null) {
