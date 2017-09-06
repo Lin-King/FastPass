@@ -28,11 +28,21 @@ public class Constant {
      */
     public static final int DEFAULT_TRY_TIME = 10;
 
+    public static final String KEY_IP_PORT_INFO = "KEY_IP_PORT_INFO";
+
     /**
-     * 文件发送方 与 文件接收方 通信信息
+     * UDP通知：文件接收端初始化
      */
     public static final String MSG_FILE_RECEIVER_INIT = "MSG_FILE_RECEIVER_INIT";
+
+    /**
+     * UDP通知：文件接收端初始化完毕
+     */
     public static final String MSG_FILE_RECEIVER_INIT_SUCCESS = "MSG_FILE_RECEIVER_INIT_SUCCESS";
 
-    public static final String KEY_IP_PORT_INFO = "KEY_IP_PORT_INFO";
+    /**
+     * UDP通知：开始发送文件
+     */
+    public static final String MSG_START_SEND = "MSG_START_SEND";
+
 }

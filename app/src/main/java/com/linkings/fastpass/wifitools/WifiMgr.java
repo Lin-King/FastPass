@@ -11,6 +11,8 @@ import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.linkings.fastpass.app.MyApplication;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -276,9 +278,8 @@ public class WifiMgr {
     }
 
     /**
-     * 获取连接WiFi后的IP地址
+     * 获取连接WiFi后的IP地址主机
      *
-     * @return
      */
     public String getIpAddressFromHotspot() {
         DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
@@ -290,6 +291,18 @@ public class WifiMgr {
                     + "." + ((address >> 24) & 0xFF));
         }
         return null;
+    }
+
+    public static String getWifiIP() {
+        WifiManager wifiManager = (WifiManager) MyApplication.getInstance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        StringBuilder sb = new StringBuilder();
+        sb.append(ipAddress & 0xFF).append(".");
+        sb.append((ipAddress >> 8) & 0xFF).append(".");
+        sb.append((ipAddress >> 16) & 0xFF).append(".");
+        sb.append((ipAddress >> 24) & 0xFF);
+        return sb.toString();
     }
 
     /**
@@ -432,7 +445,7 @@ public class WifiMgr {
         return result;
     }
 
-    public boolean isNoPasswordWifi(ScanResult scanResult) {
+    public static boolean isNoPasswordWifi(ScanResult scanResult) {
         return scanResult.capabilities != null && scanResult.capabilities.equals(NO_PASSWORD) || scanResult.capabilities != null && scanResult.capabilities.equals(NO_PASSWORD_WPS);
     }
 
