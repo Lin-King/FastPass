@@ -34,6 +34,7 @@
         </activity>
         <activity android:name=".ui.activity.AcceptActivity"/>
         <activity android:name=".ui.activity.SendActivity"/>
+        <activity android:name=".ui.activity.SendListActivity"/>
     </application>
 
 </manifest>

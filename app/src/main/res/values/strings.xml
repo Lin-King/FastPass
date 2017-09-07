@@ -13,4 +13,6 @@
     <string name="file">文件</string>
     <string name="icon">icon</string>
     <string name="password">密码</string>
+    <string name="str_name">名称</string>
+    <string name="str_cancel">取消</string>
 </resources>

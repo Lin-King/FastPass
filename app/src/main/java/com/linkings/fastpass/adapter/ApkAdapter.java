@@ -8,7 +8,8 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.linkings.fastpass.R;
-import com.linkings.fastpass.model.Apk;
+import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.utils.BitmapUtil;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -22,20 +23,20 @@ import butterknife.ButterKnife;
  * Description: TOO
  */
 
-public class ApkAdapter extends BaseQuickAdapter<Apk, ApkAdapter.ViewHolder> {
+public class ApkAdapter extends BaseQuickAdapter<FileInfo, ApkAdapter.ViewHolder> {
 
 
-    public ApkAdapter(@Nullable List<Apk> data) {
+    public ApkAdapter(@Nullable List<FileInfo> data) {
         super(R.layout.item_apk, data);
     }
 
     @Override
-    protected void convert(ViewHolder helper, Apk item) {
-        helper.mTvName.setText(item.getName());
+    protected void convert(ViewHolder helper, FileInfo item) {
+        helper.mTvName.setText(item.getFileName());
         String size = getFileSize(item.getSize());
 //        String size = String.format("%.2f", item.getSize() / 1024f / 1024f) + "M" ;
         helper.mTvSize.setText(size);
-        helper.mIvIcon.setImageDrawable(item.getPic());
+        helper.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
     }
 
     private static final DecimalFormat FORMAT = new DecimalFormat("####.##");

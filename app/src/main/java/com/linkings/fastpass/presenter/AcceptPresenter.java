@@ -14,17 +14,21 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.gson.Gson;
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.adapter.AcceptAdapter;
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.AcceptActivity;
+import com.linkings.fastpass.ui.activity.SendListActivity;
+import com.linkings.fastpass.utils.FileInfoMG;
 import com.linkings.fastpass.utils.LogUtil;
 import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.widget.WifiBroadcaseReceiver;
 import com.linkings.fastpass.wifitools.WifiMgr;
 
-import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -33,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.linkings.fastpass.config.Constant.MSG_FILE_RECEIVER_INIT_SUCCESS;
-import static com.linkings.fastpass.config.Constant.RECEIVER_INIT_SUCCESS;
+import static com.linkings.fastpass.config.Constant.MSG_UPDATE_ADAPTER;
 import static com.linkings.fastpass.config.Constant.UTF8;
 
 /**
@@ -49,30 +53,22 @@ public class AcceptPresenter {
     private Runnable mUdpServerRuannable; //与 文件发送方 通信的 线程
     private DatagramSocket mDatagramSocket; //开启 文件发送方 通信服务 (必须在子线程执行)
 
-    private MyHandler mMyHandler = new MyHandler(acceptActivity);
     private List<ScanResult> mWifiScanList;
     private AcceptAdapter mAcceptAdapter;
     private boolean firstConnect;
     private String mSelectedSSID = "";
 
-    private static class MyHandler extends Handler {
-        private WeakReference<AcceptActivity> activityWeakReference;
-
-        MyHandler(AcceptActivity mAcceptPresenter) {
-            activityWeakReference = new WeakReference<>(mAcceptPresenter);
-        }
-
+    private Handler mMyHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            AcceptActivity acceptActivity = activityWeakReference.get();
-            if (acceptActivity != null) {
-                switch (msg.what) {
-                    case RECEIVER_INIT_SUCCESS:
-                        break;
-                }
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_UPDATE_ADAPTER:
+                    SendListActivity.startActivity(acceptActivity);
+                    break;
             }
         }
-    }
+    };
 
     public AcceptPresenter(AcceptActivity acceptActivity, RecyclerView recyclerview) {
         this.acceptActivity = acceptActivity;
@@ -104,14 +100,21 @@ public class AcceptPresenter {
                                 return;
                             }
                             passwordSSID[0] = password;
+                            try {
+                                ToastUtil.show(acceptActivity, "正在连接Wifi...");
+                                mWifiMgr.connectWifi(scanResult, passwordSSID[0]);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
-                }
-                try {
-                    ToastUtil.show(acceptActivity, "正在连接Wifi...");
-                    mWifiMgr.connectWifi(scanResult, passwordSSID[0]);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } else {
+                    try {
+                        ToastUtil.show(acceptActivity, "正在连接Wifi...");
+                        mWifiMgr.connectWifi(scanResult, passwordSSID[0]);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
@@ -173,6 +176,7 @@ public class AcceptPresenter {
                     mDatagramSocket.send(sendPacket);
                     LogUtil.i("发送消息 ------->>>" + MSG_FILE_RECEIVER_INIT_SUCCESS);
 
+                    FileInfoMG.getInstance().cleanFileInfoList();
                     //接收文件列表
                     //noinspection InfiniteLoopStatement
                     while (true) {
@@ -181,9 +185,8 @@ public class AcceptPresenter {
                         mDatagramSocket.receive(receivePacket);
                         String response = new String(receivePacket.getData()).trim();
                         if (!TextUtils.isEmpty(response)) {
-                            //发送端发来的文件列表
                             LogUtil.i("接收到的消息 -------->>>" + response);
-//                            parseFileInfoList(response);
+                            parseFileInfoList(response);
                         }
                     }
                 } catch (Exception e) {
@@ -191,6 +194,22 @@ public class AcceptPresenter {
                 }
             }
         }.start();
+    }
+
+    private void parseFileInfoList(String jsonStr) {
+        if (!TextUtils.isEmpty(jsonStr)) {
+            FileInfoJson fileInfoJson = new Gson().fromJson(jsonStr, FileInfoJson.class);
+            List<FileInfo> fileInfos = fileInfoJson.getFileInfos();
+            if (fileInfos.size() > 0) {
+                for (FileInfo fileInfo : fileInfos) {
+                    if (fileInfo != null && !TextUtils.isEmpty(fileInfo.getFilePath())) {
+                        FileInfoMG.getInstance().getFileInfoList().add(fileInfo);
+                    }
+                }
+                //更新适配器
+                mMyHandler.sendEmptyMessage(MSG_UPDATE_ADAPTER);
+            }
+        }
     }
 
     /**
@@ -252,7 +271,6 @@ public class AcceptPresenter {
             if (connectedSSID.equals(mSelectedSSID) && !firstConnect) {
                 LogUtil.i("WiFi连接成功");
                 ToastUtil.show(acceptActivity, "Wifi连接成功...");
-                mMyHandler.sendEmptyMessage(RECEIVER_INIT_SUCCESS);
                 //发送UDP通知信息到 文件接收方 开启ServerSocketRunnable
                 mUdpServerRuannable = createSendMsgToServerRunnable(mWifiMgr.getIpAddressFromHotspot());
                 MyApplication.MAIN_EXECUTOR.execute(mUdpServerRuannable);

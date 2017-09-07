@@ -41,6 +41,11 @@ public class Constant {
     public static final String MSG_FILE_RECEIVER_INIT_SUCCESS = "MSG_FILE_RECEIVER_INIT_SUCCESS";
 
     /**
+     * UDP通知：文件接收端列表初始化完毕
+     */
+    public static final String MSG_FILE_RECEIVER_LIST = "MSG_FILE_RECEIVER_LIST";
+
+    /**
      * UDP通知：开始发送文件
      */
     public static final String MSG_START_SEND = "MSG_START_SEND";

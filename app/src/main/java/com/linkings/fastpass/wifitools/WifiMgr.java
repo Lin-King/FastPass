@@ -26,6 +26,9 @@ public class WifiMgr {
     private WifiManager mWifiManager;
     private static WifiMgr mWifiMgr;
 
+    public WifiManager getWifiManager() {
+        return mWifiManager;
+    }
 
     public WifiMgr(Context context) {
         mContext = context;
