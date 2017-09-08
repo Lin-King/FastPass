@@ -22,6 +22,7 @@ public abstract class WifiAPBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if (action.equals(ACTION_WIFI_AP_STATE_CHANGED)) { //Wifi AP state changed
             // get Wi-Fi Hotspot state here
+            //便携式热点的状态为：10---正在关闭；11---已关闭；12---正在开启；13---已开启 
             int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
             LogUtil.i("Wifi Ap state--->>>" + state);
             if (WifiManager.WIFI_STATE_ENABLED == state % 10) {
