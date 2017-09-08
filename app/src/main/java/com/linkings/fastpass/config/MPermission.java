@@ -1,4 +1,4 @@
-package com.linkings.fastpass.utils;
+package com.linkings.fastpass.config;
 
 import android.Manifest;
 import android.app.Activity;

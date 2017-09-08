@@ -21,6 +21,10 @@ public class MyApplication extends Application {
      * 主要的线程池
      */
     public static Executor MAIN_EXECUTOR = Executors.newFixedThreadPool(5);
+    /**
+     * 文件发送端单线程
+     */
+    public static Executor FILE_SENDER_EXECUTOR = Executors.newSingleThreadExecutor();
 
     public MyApplication() {
     }

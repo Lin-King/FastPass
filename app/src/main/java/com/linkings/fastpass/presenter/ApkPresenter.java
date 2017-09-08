@@ -14,7 +14,7 @@ import com.linkings.fastpass.adapter.ApkAdapter;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
-import com.linkings.fastpass.utils.FileInfoMG;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.utils.ToastUtil;
 
 import java.io.File;
@@ -52,6 +52,7 @@ public class ApkPresenter {
                 mApk.setSize(file.length());
                 String s = BitmapUtil.bitmapToBase64(BitmapUtil.drawable2Bitmap(packageInfo.applicationInfo.loadIcon(packageManager)));
                 mApk.setPic(s);
+                mApk.setFileType("apk");
 //                Drawable drawable = packageInfo.applicationInfo.loadIcon(packageManager);
 //                fileInfo.setBitmap(drawableToBitmap(drawable));
                 mApks.add(mApk);

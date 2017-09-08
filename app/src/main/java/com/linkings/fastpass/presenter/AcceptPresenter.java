@@ -22,13 +22,14 @@ import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.AcceptActivity;
-import com.linkings.fastpass.ui.activity.SendListActivity;
-import com.linkings.fastpass.utils.FileInfoMG;
+import com.linkings.fastpass.ui.activity.ReceiveListActivity;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.utils.LogUtil;
 import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.widget.WifiBroadcaseReceiver;
 import com.linkings.fastpass.wifitools.WifiMgr;
 
+import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -58,28 +59,40 @@ public class AcceptPresenter {
     private boolean firstConnect;
     private String mSelectedSSID = "";
 
-    private Handler mMyHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_UPDATE_ADAPTER:
-                    SendListActivity.startActivity(acceptActivity);
-                    break;
-            }
-        }
-    };
+    private MyHandler mMyHandler;
 
     public AcceptPresenter(AcceptActivity acceptActivity, RecyclerView recyclerview) {
         this.acceptActivity = acceptActivity;
         this.recyclerview = recyclerview;
+        mMyHandler = new MyHandler(acceptActivity);
+    }
+
+
+    private static class MyHandler extends Handler {
+        private WeakReference<AcceptActivity> activityWeakReference;
+
+        MyHandler(AcceptActivity mAcceptPresenter) {
+            activityWeakReference = new WeakReference<>(mAcceptPresenter);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            AcceptActivity acceptActivity = activityWeakReference.get();
+            if (acceptActivity != null) {
+                switch (msg.what) {
+                    case MSG_UPDATE_ADAPTER:
+                        ReceiveListActivity.startActivity(acceptActivity);
+                        break;
+                }
+            }
+        }
     }
 
     public void init() {
         //开启WiFi，监听WiFi广播
         registerWifiReceiver();
         mWifiMgr = WifiMgr.getInstance(acceptActivity);
-        if (!mWifiMgr.isWifiEnabled()) mWifiMgr.openWifi();
+        if (!mWifiMgr.isWifiEnabled()) mWifiMgr.startScan();
         else clearWifiConfig();
         mWifiScanList = new ArrayList<>();
         mAcceptAdapter = new AcceptAdapter(mWifiScanList);
@@ -235,7 +248,9 @@ public class AcceptPresenter {
     }
 
     public void clearWifiConfig() {
-        mWifiMgr.clearWifiConfig();
+//        mWifiMgr.clearWifiConfig();
+        if (mWifiMgr.isWifi(acceptActivity))
+            mWifiMgr.disconnectWifi(mWifiMgr.getConnectedSSID());
     }
 
     private interface OnWifiPasswordConfirmListener {
@@ -280,7 +295,7 @@ public class AcceptPresenter {
 
         @Override
         public void onWifiDisconnected() {
-
+            firstConnect = false;
         }
     };
 
@@ -311,6 +326,21 @@ public class AcceptPresenter {
             acceptActivity.unregisterReceiver(mWifiBroadcaseReceiver);
             mWifiBroadcaseReceiver = null;
         }
+    }
+
+    /**
+     * 关闭UDP Socket
+     */
+    public void closeUdpSocket() {
+        if (mDatagramSocket != null) {
+            if (!mDatagramSocket.isClosed()) {
+                mDatagramSocket.close();
+            }
+            mDatagramSocket.disconnect();
+            mDatagramSocket.close();
+            mDatagramSocket = null;
+        }
+        if (mUdpServerRuannable != null) mUdpServerRuannable = null;
     }
 
 }

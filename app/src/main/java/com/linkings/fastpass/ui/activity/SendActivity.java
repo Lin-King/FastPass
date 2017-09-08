@@ -48,6 +48,7 @@ public class SendActivity extends BaseActivity implements ISendView {
     protected void onDestroy() {
         super.onDestroy();
         mSendPresenter.unregisterHotSpotReceiver();
+        mSendPresenter.closeUdpSocket();
     }
 
     public static void startActivity(Activity srcActivity) {

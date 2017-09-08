@@ -12,15 +12,15 @@ import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.SendActivity;
 import com.linkings.fastpass.ui.activity.SendListActivity;
-import com.linkings.fastpass.utils.FileInfoMG;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.utils.LogUtil;
-import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.utils.TypeConvertUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
 import com.linkings.fastpass.wifitools.ApMgr;
 import com.linkings.fastpass.wifitools.WifiMgr;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.linkings.fastpass.config.Constant.MSG_FILE_RECEIVER_INIT_SUCCESS;
-import static com.linkings.fastpass.config.Constant.MSG_SET_STATUS;
 import static com.linkings.fastpass.config.Constant.UTF8;
 
 /**
@@ -44,38 +43,37 @@ public class SendPresenter {
     private Runnable mUdpServerRuannable;//与 文件发送方 通信的 线程
     private boolean mIsInitialized;
     private DatagramSocket mDatagramSocket;
+    private MyHandler mMyHandler;
 
-    private Handler mMyHandler = new Handler() {
+    private static class MyHandler extends Handler {
+        private WeakReference<SendActivity> activityWeakReference;
+
+        private MyHandler(SendActivity mSendActivity) {
+            activityWeakReference = new WeakReference<>(mSendActivity);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constant.MSG_UPDATE_PROGRESS:
-                    //更新文件发送进度
-                    int position = msg.arg1;
-                    int progress = msg.arg2;
-//                        if (position >= 0 && position < mSendFileAdapter.getItemCount()) {
-//                            updateProgress(position, progress);
-//                        }
-                    break;
-                case Constant.MSG_UPDATE_ADAPTER:
-                    SendListActivity.startActivity(sendActivity);
-                    break;
-                case MSG_SET_STATUS:
-                    //设置当前状态
-                    ToastUtil.show(sendActivity, msg.obj.toString());
-                    break;
+            SendActivity mSendActivity = activityWeakReference.get();
+            if (mSendActivity != null) {
+                switch (msg.what) {
+                    case Constant.MSG_UPDATE_ADAPTER:
+                        SendListActivity.startActivity(mSendActivity);
+                        break;
+                }
             }
         }
-    };
+    }
 
     public SendPresenter(SendActivity sendActivity) {
         this.sendActivity = sendActivity;
+        mMyHandler = new MyHandler(sendActivity);
     }
 
     public void init() {
-        //        if (ApMgr.isApOn(sendActivity)) {
-//            ApMgr.closeAp(sendActivity);
-//        }
+        if (ApMgr.isApOn(sendActivity)) {
+            ApMgr.closeAp(sendActivity);
+        }
         mWifiAPBroadcastReceiver = new WifiAPBroadcastReceiver() {
             @Override
             public void onWifiApEnabled() {
@@ -169,7 +167,8 @@ public class SendPresenter {
                 DatagramPacket sendFileInfoPacket = new DatagramPacket(jsonStr.getBytes(), jsonStr.getBytes().length, ipAddress, serverPort);
                 mDatagramSocket.send(sendFileInfoPacket);
                 LogUtil.i("发送消息 --------->>>" + jsonStr + " === Success!");
-                mMyHandler.obtainMessage(MSG_SET_STATUS, "成功发送文件列表...").sendToTarget();
+                mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+//                mMyHandler.obtainMessage(MSG_SET_STATUS, "成功发送文件列表...").sendToTarget();
             } catch (IOException e) {
                 e.printStackTrace();
                 LogUtil.i(e.toString());
@@ -186,5 +185,20 @@ public class SendPresenter {
             sendActivity.unregisterReceiver(mWifiAPBroadcastReceiver);
             mWifiAPBroadcastReceiver = null;
         }
+    }
+
+    /**
+     * 关闭UDP Socket
+     */
+    public void closeUdpSocket() {
+        if (mDatagramSocket != null) {
+            if (!mDatagramSocket.isClosed()) {
+                mDatagramSocket.close();
+            }
+            mDatagramSocket.disconnect();
+            mDatagramSocket.close();
+            mDatagramSocket = null;
+        }
+        if (mUdpServerRuannable != null) mUdpServerRuannable = null;
     }
 }

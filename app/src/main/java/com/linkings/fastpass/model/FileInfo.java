@@ -13,7 +13,7 @@ public class FileInfo implements Serializable {
     public static final int FLAG_SUCCESS = 1;//文件传输结果：1 成功
     public static final int FLAG_FAILURE = -1;//文件传输结果：-1 失败
     private String filePath;//文件路径
-    private int fileType;//文件类型
+    private String fileType;//文件类型
     private long size;//文件大小
     private String fileName;//文件名
     private int result;//文件传送结果
@@ -92,11 +92,11 @@ public class FileInfo implements Serializable {
         this.filePath = filePath;
     }
 
-    public int getFileType() {
+    public String getFileType() {
         return fileType;
     }
 
-    public void setFileType(int fileType) {
+    public void setFileType(String fileType) {
         this.fileType = fileType;
     }
 

@@ -10,8 +10,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
-import com.linkings.fastpass.presenter.SendListPresenter;
-import com.linkings.fastpass.ui.interfaces.ISendListView;
+import com.linkings.fastpass.presenter.ReceiveListPresenter;
+import com.linkings.fastpass.ui.interfaces.IReceiveListView;
 
 import butterknife.BindView;
 import permissions.dispatcher.NeedsPermission;
@@ -22,55 +22,56 @@ import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
 /**
- * Created by Lin on 2017/9/7.
- * Time: 15:46
+ * Created by Lin on 2017/9/8.
+ * Time: 11:25
  * Description: TOO
  */
 
 @RuntimePermissions
-public class SendListActivity extends BaseActivity implements ISendListView {
+public class ReceiveListActivity extends BaseActivity implements IReceiveListView {
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
-    private SendListPresenter mSendListPresenter;
+    private ReceiveListPresenter mReceiveListPresenter;
 
     @Override
     public void initView() {
-        SendListActivityPermissionsDispatcher.needsWithCheck(this);
+        ReceiveListActivityPermissionsDispatcher.needsWithCheck(this);
     }
 
     @Override
     public void initPresenter() {
-        mSendListPresenter = new SendListPresenter(this);
+        mReceiveListPresenter = new ReceiveListPresenter(this);
     }
 
     @Override
     protected int getContentResId() {
-        return R.layout.activity_sendlist;
+        return R.layout.activity_filereceivelist;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSendListPresenter.cleanSocket();
-        if (mSendListPresenter.hasFileSending()) mSendListPresenter.stopAllFileSendingTask();
+        mReceiveListPresenter.closeClientSocket();
+        if (mReceiveListPresenter.hasFileReceiving())
+            mReceiveListPresenter.stopAllFileReceivingTask();
     }
 
     public static void startActivity(Activity srcActivity) {
-        Intent intent = new Intent(srcActivity, SendListActivity.class);
+        Intent intent = new Intent(srcActivity, ReceiveListActivity.class);
         srcActivity.startActivity(intent);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        SendListActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        ReceiveListActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void needs() {
-        mSendListPresenter.init(mRecyclerview);
+        mReceiveListPresenter.init(mRecyclerview);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

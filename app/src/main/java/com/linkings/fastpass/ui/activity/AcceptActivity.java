@@ -54,6 +54,7 @@ public class AcceptActivity extends BaseActivity implements IAcceptView {
     protected void onDestroy() {
         super.onDestroy();
         mAcceptPresenter.unregisterWifiReceiver();
+        mAcceptPresenter.closeUdpSocket();
         mAcceptPresenter.clearWifiConfig();
     }
 
