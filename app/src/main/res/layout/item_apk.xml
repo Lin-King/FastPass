@@ -9,11 +9,27 @@
               android:gravity="center"
               android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_icon"
+    <FrameLayout
         android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="@string/icon"/>
+        android:layout_height="40dp">
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/icon"/>
+
+        <ImageView
+            android:id="@+id/iv_ok"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom|end"
+            android:background="#9fff"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/icon"
+            android:src="@mipmap/ic_check_box_blue_400_24dp"
+            android:visibility="visible"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_name"

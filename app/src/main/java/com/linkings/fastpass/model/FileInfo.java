@@ -18,6 +18,7 @@ public class FileInfo implements Serializable {
     private String fileName;//文件名
     private int result;//文件传送结果
     private int progress;//传输进度
+    private boolean isOK;//是否选中
     //Apk
     private String pic;
     //mp3
@@ -27,6 +28,14 @@ public class FileInfo implements Serializable {
     private String albums; // 专辑  
     private String artist; // 艺术家   
     private String singer; //歌手   
+
+    public boolean isOK() {
+        return isOK;
+    }
+
+    public void setOK(boolean OK) {
+        isOK = OK;
+    }
 
     public String getPic() {
         return pic;

@@ -5,7 +5,10 @@ import android.support.v4.app.Fragment;
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
+import com.linkings.fastpass.ui.fragment.FileFragment;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
+import com.linkings.fastpass.ui.fragment.PicFragment;
+import com.linkings.fastpass.ui.fragment.VideoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.List;
  */
 
 public class HomePresenter {
-    HomeActivity mHomeActivity;
+    private HomeActivity mHomeActivity;
 
     public HomePresenter(HomeActivity homeActivity) {
         mHomeActivity = homeActivity;
@@ -30,10 +33,10 @@ public class HomePresenter {
     public void init() {
         List<Fragment> mList = new ArrayList<>();
         mList.add(new ApkFragment());
+        mList.add(new VideoFragment());
         mList.add(new MediaFragment());
-        mList.add(new MediaFragment());
-        mList.add(new MediaFragment());
-        mList.add(new MediaFragment());
+        mList.add(new PicFragment());
+        mList.add(new FileFragment());
         String[] title = {
                 mHomeActivity.intoString(R.string.application),
                 mHomeActivity.intoString(R.string.video),
@@ -43,5 +46,5 @@ public class HomePresenter {
         };
         mHomeActivity.init(mList, title);
     }
-    
+
 }

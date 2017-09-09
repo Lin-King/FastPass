@@ -4,37 +4,35 @@ import android.support.v7.widget.RecyclerView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseFragment;
-import com.linkings.fastpass.presenter.ApkPresenter;
-import com.linkings.fastpass.ui.interfaces.IApkView;
+import com.linkings.fastpass.presenter.VideoPresenter;
+import com.linkings.fastpass.ui.interfaces.IVideoView;
 
 import butterknife.BindView;
 
 /**
- * Created by Lin on 2017/9/3.
- * Time: 11:48
+ * Created by Lin on 2017/9/9.
+ * Time: 23:34
  * Description: TOO
  */
 
-public class ApkFragment extends BaseFragment implements IApkView {
+public class VideoFragment extends BaseFragment implements IVideoView {
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
-    private ApkPresenter mApkPresenter;
+    private VideoPresenter mVideoPresenter;
 
     @Override
     public int getLayoutRes() {
-        return R.layout.fragment_apk;
+        return R.layout.fragment_video;
     }
 
     @Override
     public void initPresenter() {
-        mApkPresenter = new ApkPresenter(this);
+        mVideoPresenter = new VideoPresenter(this);
     }
 
     @Override
     public void initView() {
-        showProgress("");
-        mApkPresenter.init(mRecyclerview);
+        mVideoPresenter.init(mRecyclerview);
     }
-
 }

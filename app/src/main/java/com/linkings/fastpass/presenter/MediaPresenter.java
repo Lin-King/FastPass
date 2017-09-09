@@ -81,7 +81,6 @@ public class MediaPresenter {
             // 释放资源  
             cursor.close();
         }
-
         return list;
     }
 

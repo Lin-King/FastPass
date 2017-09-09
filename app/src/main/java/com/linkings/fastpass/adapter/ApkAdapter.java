@@ -34,9 +34,13 @@ public class ApkAdapter extends BaseQuickAdapter<FileInfo, ApkAdapter.ViewHolder
     protected void convert(ViewHolder helper, FileInfo item) {
         helper.mTvName.setText(item.getFileName());
         String size = getFileSize(item.getSize());
-//        String size = String.format("%.2f", item.getSize() / 1024f / 1024f) + "M" ;
         helper.mTvSize.setText(size);
         helper.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
+        if (item.isOK()) {
+            helper.mIvOk.setVisibility(View.VISIBLE);
+        } else {
+            helper.mIvOk.setVisibility(View.GONE);
+        }
     }
 
     private static final DecimalFormat FORMAT = new DecimalFormat("####.##");
@@ -64,6 +68,8 @@ public class ApkAdapter extends BaseQuickAdapter<FileInfo, ApkAdapter.ViewHolder
     static class ViewHolder extends BaseViewHolder {
         @BindView(R.id.iv_icon)
         ImageView mIvIcon;
+        @BindView(R.id.iv_ok)
+        ImageView mIvOk;
         @BindView(R.id.tv_name)
         TextView mTvName;
         @BindView(R.id.tv_size)
