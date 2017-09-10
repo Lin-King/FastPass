@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.utils.BitmapUtil;
 import com.linkings.fastpass.utils.OtherUtil;
 
 import java.util.List;
@@ -22,16 +23,16 @@ import butterknife.ButterKnife;
  * Description: TOO
  */
 
-public class MediaAdapter extends BaseQuickAdapter<FileInfo, MediaAdapter.ViewHolder> {
+public class PicAdapter extends BaseQuickAdapter<FileInfo, PicAdapter.ViewHolder> {
 
-    public MediaAdapter(@Nullable List<FileInfo> data) {
-        super(R.layout.item_media, data);
+    public PicAdapter(@Nullable List<FileInfo> data) {
+        super(R.layout.item_pic, data);
     }
 
     @Override
     protected void convert(ViewHolder holder, FileInfo item) {
+        holder.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
         holder.mTvName.setText(item.getFileName());
-        holder.mTvSinger.setText(item.getArtist());
         int duration = item.getDuration();
         String time = OtherUtil.formatTime(duration);
         holder.mTvDuration.setText(time);
@@ -51,8 +52,6 @@ public class MediaAdapter extends BaseQuickAdapter<FileInfo, MediaAdapter.ViewHo
         ImageView mIvIcon;
         @BindView(R.id.tv_name)
         TextView mTvName;
-        @BindView(R.id.tv_singer)
-        TextView mTvSinger;
         @BindView(R.id.tv_duration)
         TextView mTvDuration;
         @BindView(R.id.tv_size)

@@ -2,17 +2,18 @@ package com.linkings.fastpass.presenter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.linkings.fastpass.adapter.MediaAdapter;
+import com.linkings.fastpass.adapter.VideoAdapter;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
+import com.linkings.fastpass.utils.BitmapUtil;
 import com.linkings.fastpass.utils.LogUtil;
-import com.linkings.fastpass.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 public class VideoPresenter {
     private VideoFragment videoFragment;
     private List<FileInfo> mVideo;
+    private VideoAdapter mVideoAdapter;
 
     public VideoPresenter(VideoFragment videoFragment) {
         this.videoFragment = videoFragment;
@@ -36,12 +38,14 @@ public class VideoPresenter {
         mVideo = getVideoData(videoFragment.getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(videoFragment.getContext());
         recyclerview.setLayoutManager(linearLayoutManager);
-        MediaAdapter mediaAdapter = new MediaAdapter(mVideo);
-        recyclerview.setAdapter(mediaAdapter);
-        mediaAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        mVideoAdapter = new VideoAdapter(mVideo);
+        recyclerview.setAdapter(mVideoAdapter);
+        mVideoAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ToastUtil.show(videoFragment.getContext(), mVideo.get(position).getFilePath());
+                FileInfo fileInfo = mVideo.get(position);
+                fileInfo.setOK(!fileInfo.isOK());
+                mVideoAdapter.notifyDataSetChanged();
             }
         });
         LogUtil.i(mVideo.size() + "");
@@ -64,6 +68,8 @@ public class VideoPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE)));
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+                Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
+                mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                 if (mediaEntity.getSize() > 1000 * 800) {
                     // 注释部分是切割标题，分离出歌曲名和歌手 （本地媒体库读取的歌曲信息不规范）  
                     if (mediaEntity.getTitle().contains("-")) {

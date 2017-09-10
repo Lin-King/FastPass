@@ -15,6 +15,8 @@ import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.util.Base64;
 import android.view.View;
 
@@ -246,5 +248,20 @@ public class BitmapUtil {
         // 因为BtimapDrawable是Drawable的子类，最终直接使用bd对象即可。
         bd.setFilterBitmap(true);
         return bd;
+    }
+
+    public static Bitmap getVideoThumbnail(String videoPath) {
+        MediaMetadataRetriever media =new MediaMetadataRetriever();
+        media.setDataSource(videoPath);
+        Bitmap bitmap = media.getFrameAtTime();
+        return bitmap;
+    }
+
+    public Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
+        // 获取视频的缩略图
+        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+        //extractThumbnail 方法二次处理,以指定的大小提取居中的图片,获取最终我们想要的图片
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return bitmap;
     }
 }

@@ -12,7 +12,6 @@ import com.linkings.fastpass.adapter.MediaAdapter;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.utils.LogUtil;
-import com.linkings.fastpass.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ public class MediaPresenter {
     private List<FileInfo> mMp3;
     private MediaFragment mediaFragment;
     private Context context;
+    private MediaAdapter mMediaAdapter;
 
     public MediaPresenter(MediaFragment mediaFragment) {
         this.mediaFragment = mediaFragment;
@@ -39,12 +39,14 @@ public class MediaPresenter {
         mMp3 = getMusicData(context);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerview.setLayoutManager(linearLayoutManager);
-        MediaAdapter mediaAdapter = new MediaAdapter(mMp3);
-        recyclerview.setAdapter(mediaAdapter);
-        mediaAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        mMediaAdapter = new MediaAdapter(mMp3);
+        recyclerview.setAdapter(mMediaAdapter);
+        mMediaAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ToastUtil.show(context, mMp3.get(position).getFilePath());
+                FileInfo fileInfo = mMp3.get(position);
+                fileInfo.setOK(!fileInfo.isOK());
+                mMediaAdapter.notifyDataSetChanged();
             }
         });
         LogUtil.i(mMp3.size() + "");
@@ -84,17 +86,5 @@ public class MediaPresenter {
         return list;
     }
 
-    /**
-     * 定义一个方法用来格式化获取到的时间
-     */
-    public static String formatTime(int time) {
-        if (time / 1000 % 60 < 10) {
-            return time / 1000 / 60 + ":0" + time / 1000 % 60;
-
-        } else {
-            return time / 1000 / 60 + ":" + time / 1000 % 60;
-        }
-
-    }
 }
 
