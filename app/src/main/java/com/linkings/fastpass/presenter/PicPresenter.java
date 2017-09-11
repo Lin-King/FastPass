@@ -99,8 +99,8 @@ public class PicPresenter {
             public void run() {
                 int firstVisibleItemPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
-                LogUtil.i("firstVisibleItemPosition " + firstVisibleItemPosition);
-                LogUtil.i("lastVisibleItemPosition " + lastVisibleItemPosition);
+//                LogUtil.i("firstVisibleItemPosition " + firstVisibleItemPosition);
+//                LogUtil.i("lastVisibleItemPosition " + lastVisibleItemPosition);
                 if (mPic != null && firstVisibleItemPosition >= 0) {
                     for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; i++) {
                         FileInfo fileInfo = mPic.get(i);
