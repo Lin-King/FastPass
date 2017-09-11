@@ -188,7 +188,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void needs() {
         mHomePresenter.init();
-        LogUtil.i("needs");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

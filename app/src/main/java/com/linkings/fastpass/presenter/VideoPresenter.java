@@ -3,6 +3,8 @@ package com.linkings.fastpass.presenter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,11 +12,13 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.VideoAdapter;
+import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
 import com.linkings.fastpass.utils.LogUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +32,38 @@ public class VideoPresenter {
     private VideoFragment videoFragment;
     private List<FileInfo> mVideo;
     private VideoAdapter mVideoAdapter;
+    private MyHandler mMyHandler;
 
     public VideoPresenter(VideoFragment videoFragment) {
         this.videoFragment = videoFragment;
+        mMyHandler = new MyHandler(this);
+    }
+
+    private static class MyHandler extends Handler {
+        private WeakReference<VideoPresenter> activityWeakReference;
+
+        MyHandler(VideoPresenter mVideoPresenter) {
+            activityWeakReference = new WeakReference<>(mVideoPresenter);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            VideoPresenter mVideoPresenter = activityWeakReference.get();
+            if (mVideoPresenter != null) {
+                switch (msg.what) {
+                    case Constant.MSG_UPDATE_ADAPTER:
+                        if (mVideoPresenter.mVideoAdapter != null) {
+                            mVideoPresenter.mVideoAdapter.notifyDataSetChanged();
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     public void init(RecyclerView recyclerview) {
+        videoFragment.showProgress("");
         mVideo = new ArrayList<>();
-        mVideo = getVideoData(videoFragment.getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(videoFragment.getContext());
         recyclerview.setLayoutManager(linearLayoutManager);
         mVideoAdapter = new VideoAdapter(mVideo);
@@ -48,7 +76,22 @@ public class VideoPresenter {
                 mVideoAdapter.notifyDataSetChanged();
             }
         });
-        LogUtil.i(mVideo.size() + "");
+        readVideo();
+    }
+
+    private void readVideo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mVideo != null) {
+                    mVideo.clear();
+                    mVideo.addAll(getVideoData(videoFragment.getContext()));
+                    LogUtil.i(mVideo.size() + "");
+                    mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+                    videoFragment.hideProgress();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -56,7 +99,6 @@ public class VideoPresenter {
      */
     private static List<FileInfo> getVideoData(Context context) {
         List<FileInfo> list = new ArrayList<>();
-        // 媒体库查询语句（写一个工具类MusicUtils）  
         Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -71,7 +113,6 @@ public class VideoPresenter {
                 Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
                 mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                 if (mediaEntity.getSize() > 1000 * 800) {
-                    // 注释部分是切割标题，分离出歌曲名和歌手 （本地媒体库读取的歌曲信息不规范）  
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
                         mediaEntity.setArtist(str[0]);
@@ -80,7 +121,6 @@ public class VideoPresenter {
                     list.add(mediaEntity);
                 }
             }
-            // 释放资源  
             cursor.close();
         }
         return list;

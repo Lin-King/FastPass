@@ -76,6 +76,12 @@ public class SendPresenter {
         }
         mWifiAPBroadcastReceiver = new WifiAPBroadcastReceiver() {
             @Override
+            public void onWifiApDisabled() {
+                String ssid = TextUtils.isEmpty(Build.DEVICE) ? Constant.DEFAULT_SSID : Build.DEVICE;
+                ApMgr.openAp(sendActivity, ssid, "");
+            }
+
+            @Override
             public void onWifiApEnabled() {
                 LogUtil.i("======>>>onWifiApEnabled !!!");
                 if (!mIsInitialized) {
@@ -87,9 +93,6 @@ public class SendPresenter {
         };
         IntentFilter filter = new IntentFilter(WifiAPBroadcastReceiver.ACTION_WIFI_AP_STATE_CHANGED);
         sendActivity.registerReceiver(mWifiAPBroadcastReceiver, filter);
-        String ssid = TextUtils.isEmpty(Build.DEVICE) ? Constant.DEFAULT_SSID : Build.DEVICE;
-//        ssid = Build.MODEL;
-        ApMgr.openAp(sendActivity, ssid, "");
     }
 
     /**

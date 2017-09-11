@@ -33,6 +33,19 @@ public class MediaFragment extends BaseFragment implements IMediaView {
 
     @Override
     public void initView() {
-        mMediaPresenter.init(mRecyclerview);
+        if (initializeUI) mMediaPresenter.init(mRecyclerview);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (!initializeUI && initializeFragment) {
+                initializeUI = true;
+                initView();
+                return;
+            }
+            if (!initializeUI) initializeUI = true;
+        }
     }
 }

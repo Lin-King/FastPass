@@ -33,6 +33,19 @@ public class PicFragment extends BaseFragment implements IPicView {
 
     @Override
     public void initView() {
-        mPicPresenter.init(mRecyclerview);
+        if (initializeUI) mPicPresenter.init(mRecyclerview);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (!initializeUI && initializeFragment) {
+                initializeUI = true;
+                initView();
+                return;
+            }
+            if (!initializeUI) initializeUI = true;
+        }
     }
 }

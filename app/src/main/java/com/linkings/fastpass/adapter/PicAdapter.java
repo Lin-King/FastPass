@@ -1,6 +1,7 @@
 package com.linkings.fastpass.adapter;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +32,11 @@ public class PicAdapter extends BaseQuickAdapter<FileInfo, PicAdapter.ViewHolder
 
     @Override
     protected void convert(ViewHolder holder, FileInfo item) {
-        holder.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
+        if (!TextUtils.isEmpty(item.getPic())) {
+            holder.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
+        }else {
+            holder.mIvIcon.setImageResource(R.mipmap.ic_music_note_red_100_24dp);
+        }
         holder.mTvName.setText(item.getFileName());
         int duration = item.getDuration();
         String time = OtherUtil.formatTime(duration);

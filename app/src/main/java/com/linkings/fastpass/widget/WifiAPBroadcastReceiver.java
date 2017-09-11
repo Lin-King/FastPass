@@ -25,15 +25,23 @@ public abstract class WifiAPBroadcastReceiver extends BroadcastReceiver {
             //便携式热点的状态为：10---正在关闭；11---已关闭；12---正在开启；13---已开启 
             int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
             LogUtil.i("Wifi Ap state--->>>" + state);
-            if (WifiManager.WIFI_STATE_ENABLED == state % 10) {
-                // Wifi is enabled
-                onWifiApEnabled();
-            } else if (WifiManager.WIFI_STATE_ENABLING == state % 10) {
-                // Wifi is enabling
-            } else if (WifiManager.WIFI_STATE_DISABLED == state % 10) {
-                // Wifi is disable
-            } else if (WifiManager.WIFI_STATE_DISABLING == state % 10) {
-                // Wifi is disabling
+            switch (state % 10) {
+                //正在关闭
+                case WifiManager.WIFI_STATE_DISABLING:
+//                    onWifiApDisabling();
+                    break;
+                //已关闭
+                case WifiManager.WIFI_STATE_DISABLED:
+                    onWifiApDisabled();
+                    break;
+                //正在开启
+                case WifiManager.WIFI_STATE_ENABLING:
+//                    onWifiApEnabling();
+                    break;
+                //已开启
+                case WifiManager.WIFI_STATE_ENABLED:
+                    onWifiApEnabled();
+                    break;
             }
         }
     }
@@ -41,7 +49,28 @@ public abstract class WifiAPBroadcastReceiver extends BroadcastReceiver {
     /**
      * User: Lin
      * Date: 2017/9/4 17:41
-     * Description: 热点开启回调
+     * Description: 正在关闭
+     */
+//    public abstract void onWifiApDisabling();
+
+    /**
+     * User: Lin
+     * Date: 2017/9/4 17:41
+     * Description: 已关闭
+     */
+    public abstract void onWifiApDisabled();
+
+    /**
+     * User: Lin
+     * Date: 2017/9/4 17:41
+     * Description: 正在开启
+     */
+//    public abstract void onWifiApEnabling();
+
+    /**
+     * User: Lin
+     * Date: 2017/9/4 17:41
+     * Description: 热点已开启
      */
     public abstract void onWifiApEnabled();
 }

@@ -33,6 +33,19 @@ public class VideoFragment extends BaseFragment implements IVideoView {
 
     @Override
     public void initView() {
-        mVideoPresenter.init(mRecyclerview);
+        if (initializeUI) mVideoPresenter.init(mRecyclerview);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (!initializeUI && initializeFragment) {
+                initializeUI = true;
+                initView();
+                return;
+            }
+            if (!initializeUI) initializeUI = true;
+        }
     }
 }

@@ -2,6 +2,8 @@ package com.linkings.fastpass.presenter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,10 +11,12 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.MediaAdapter;
+import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.utils.LogUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +32,38 @@ public class MediaPresenter {
     private MediaFragment mediaFragment;
     private Context context;
     private MediaAdapter mMediaAdapter;
+    private MyHandler mMyHandler;
 
     public MediaPresenter(MediaFragment mediaFragment) {
         this.mediaFragment = mediaFragment;
         this.context = mediaFragment.getActivity();
+        mMyHandler = new MyHandler(this);
+    }
+
+    private static class MyHandler extends Handler {
+        private WeakReference<MediaPresenter> activityWeakReference;
+
+        MyHandler(MediaPresenter mMediaPresenter) {
+            activityWeakReference = new WeakReference<>(mMediaPresenter);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MediaPresenter mMediaPresenter = activityWeakReference.get();
+            if (mMediaPresenter != null) {
+                switch (msg.what) {
+                    case Constant.MSG_UPDATE_ADAPTER:
+                        if (mMediaPresenter.mMediaAdapter != null) {
+                            mMediaPresenter.mMediaAdapter.notifyDataSetChanged();
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     public void init(RecyclerView recyclerview) {
+        mediaFragment.showProgress("");
         mMp3 = new ArrayList<>();
         mMp3 = getMusicData(context);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -49,7 +78,22 @@ public class MediaPresenter {
                 mMediaAdapter.notifyDataSetChanged();
             }
         });
-        LogUtil.i(mMp3.size() + "");
+        readMp3();
+    }
+
+    private void readMp3() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMp3 != null) {
+                    mMp3.clear();
+                    mMp3.addAll(getMusicData(mediaFragment.getContext()));
+                    LogUtil.i(mMp3.size() + "");
+                    mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+                    mediaFragment.hideProgress();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -57,7 +101,6 @@ public class MediaPresenter {
      */
     private static List<FileInfo> getMusicData(Context context) {
         List<FileInfo> list = new ArrayList<>();
-        // 媒体库查询语句（写一个工具类MusicUtils）  
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
                 null, MediaStore.Audio.AudioColumns.IS_MUSIC);
         if (cursor != null) {
@@ -71,7 +114,6 @@ public class MediaPresenter {
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                 if (mediaEntity.getSize() > 1000 * 800) {
-                    // 注释部分是切割标题，分离出歌曲名和歌手 （本地媒体库读取的歌曲信息不规范）  
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
                         mediaEntity.setArtist(str[0]);
@@ -80,7 +122,6 @@ public class MediaPresenter {
                     list.add(mediaEntity);
                 }
             }
-            // 释放资源  
             cursor.close();
         }
         return list;

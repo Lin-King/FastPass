@@ -1,6 +1,5 @@
 package com.linkings.fastpass.presenter;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,6 +10,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -36,6 +36,7 @@ public class PicPresenter {
     private PicFragment picFragment;
     private List<FileInfo> mPic;
     private PicAdapter mPicAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
 
     public PicPresenter(PicFragment picFragment) {
         this.picFragment = picFragment;
@@ -56,7 +57,6 @@ public class PicPresenter {
                 switch (msg.what) {
                     case Constant.MSG_UPDATE_ADAPTER:
                         if (mPicPresenter.mPicAdapter != null) {
-                            LogUtil.i(mPicPresenter.mPic.size() + "");
                             mPicPresenter.mPicAdapter.notifyDataSetChanged();
                         }
                         break;
@@ -66,9 +66,10 @@ public class PicPresenter {
     }
 
     public void init(RecyclerView recyclerview) {
+        picFragment.showProgress("");
         mPic = new ArrayList<>();
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(picFragment.getContext());
-        recyclerview.setLayoutManager(linearLayoutManager);
+        mLinearLayoutManager = new LinearLayoutManager(picFragment.getContext());
+        recyclerview.setLayoutManager(mLinearLayoutManager);
         mPicAdapter = new PicAdapter(mPic);
         recyclerview.setAdapter(mPicAdapter);
         mPicAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -79,7 +80,41 @@ public class PicPresenter {
                 mPicAdapter.notifyDataSetChanged();
             }
         });
+        recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    setPicVisit();
+                }
+            }
+        });
         readPic();
+    }
+
+    private void setPicVisit() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int firstVisibleItemPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
+                LogUtil.i("firstVisibleItemPosition " + firstVisibleItemPosition);
+                LogUtil.i("lastVisibleItemPosition " + lastVisibleItemPosition);
+                if (mPic != null && firstVisibleItemPosition >= 0) {
+                    for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; i++) {
+                        FileInfo fileInfo = mPic.get(i);
+                        if (TextUtils.isEmpty(fileInfo.getPic())) {
+                            //得到原图片  
+                            Bitmap pic = BitmapFactory.decodeFile(fileInfo.getFilePath());
+                            //得到缩略图  
+                            pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
+                            fileInfo.setPic(BitmapUtil.bitmapToBase64(pic));
+                        }
+                        mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+                    }
+                }
+            }
+        }).start();
     }
 
     private void readPic() {
@@ -88,13 +123,9 @@ public class PicPresenter {
             public void run() {
                 mPic.clear();
                 mPic.addAll(getVideoData(picFragment.getContext()));
+                LogUtil.i(mPic.size() + "");
                 mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
-                picFragment.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPicAdapter.notifyDataSetChanged();
-                    }
-                });
+                picFragment.hideProgress();
             }
         }).start();
     }
@@ -104,7 +135,6 @@ public class PicPresenter {
      */
     private static List<FileInfo> getVideoData(Context context) {
         List<FileInfo> list = new ArrayList<>();
-        // 媒体库查询语句（写一个工具类MusicUtils）  
         Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -115,12 +145,13 @@ public class PicPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
                 if (mediaEntity.getSize() > 1000 * 100) {
-//                    Bitmap pic = getImageThumbnail(context, context.getContentResolver(), mediaEntity.getFilePath());
-                    //得到原图片  
-                    Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
-                    //得到缩略图  
-                    pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
-                    mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
+                    if (list.size() < 10) {
+                        //得到原图片  
+                        Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
+                        //得到缩略图  
+                        pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
+                        mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
+                    }
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
                         mediaEntity.setArtist(str[0]);
@@ -129,39 +160,8 @@ public class PicPresenter {
                     list.add(mediaEntity);
                 }
             }
-            // 释放资源  
             cursor.close();
         }
         return list;
-    }
-
-    private static Bitmap getImageThumbnail(Context context, ContentResolver cr, String Imagepath) {
-        ContentResolver testcr = context.getContentResolver();
-        String[] projection = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID,};
-        String whereClause = MediaStore.Images.Media.DATA + " = '" + Imagepath + "'";
-        Cursor cursor = testcr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, whereClause,
-                null, null);
-        int _id = 0;
-        String imagePath = "";
-        if (cursor == null || cursor.getCount() == 0) {
-            return null;
-        }
-        if (cursor.moveToFirst()) {
-
-            int _idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            int _dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-
-            do {
-                _id = cursor.getInt(_idColumn);
-                imagePath = cursor.getString(_dataColumn);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inDither = false;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(cr, _id, MediaStore.Images.Thumbnails.MINI_KIND,
-                options);
-        return bitmap;
     }
 }

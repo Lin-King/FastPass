@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 
 public abstract class BaseFragment extends RxFragment implements IBaseView {
     public boolean initializeFragment = false;//true表示已初始化
+    public boolean initializeUI = false;//true表示已初始化
     protected View mLayoutView;
     protected Context context;
 
@@ -131,7 +132,6 @@ public abstract class BaseFragment extends RxFragment implements IBaseView {
             getBaseActivity().showToast(msg);
         }
     }
-
 
     /**
      * User: Lin

@@ -46,8 +46,8 @@ public class ApkPresenter {
     private static class MyHandler extends Handler {
         private WeakReference<ApkPresenter> activityWeakReference;
 
-        public MyHandler(ApkPresenter mApkPresenter) {
-            activityWeakReference = new WeakReference<ApkPresenter>(mApkPresenter);
+        MyHandler(ApkPresenter mApkPresenter) {
+            activityWeakReference = new WeakReference<>(mApkPresenter);
         }
 
         @Override
@@ -84,33 +84,34 @@ public class ApkPresenter {
     }
 
     private void readAPK() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mApks.clear();
-                PackageManager packageManager = context.getPackageManager();
-                List<PackageInfo> mAllPackages = packageManager.getInstalledPackages(0);
-                for (int i = 0; i < mAllPackages.size(); i++) {
-                    PackageInfo packageInfo = mAllPackages.get(i);
-                    if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+        if (mApks != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mApks.clear();
+                    PackageManager packageManager = context.getPackageManager();
+                    List<PackageInfo> mAllPackages = packageManager.getInstalledPackages(0);
+                    for (int i = 0; i < mAllPackages.size(); i++) {
+                        PackageInfo packageInfo = mAllPackages.get(i);
+                        if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
 //                Log.i("Lin", "package path : " + packageInfo.applicationInfo.sourceDir);
 //                Log.i("Lin", "apk name : " + packageInfo.applicationInfo.loadLabel(packageManager));
-                        FileInfo mApk = new FileInfo();
-                        mApk.setFileName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
-                        mApk.setFilePath(packageInfo.applicationInfo.sourceDir);
-                        File file = new File(packageInfo.applicationInfo.sourceDir);
-                        mApk.setSize(file.length());
-                        String s = BitmapUtil.bitmapToBase64(BitmapUtil.drawable2Bitmap(packageInfo.applicationInfo.loadIcon(packageManager)));
-                        mApk.setPic(s);
-                        mApk.setFileType("apk");
+                            FileInfo mApk = new FileInfo();
+                            mApk.setFileName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                            mApk.setFilePath(packageInfo.applicationInfo.sourceDir);
+                            File file = new File(packageInfo.applicationInfo.sourceDir);
+                            mApk.setSize(file.length());
+                            String s = BitmapUtil.bitmapToBase64(BitmapUtil.drawable2Bitmap(packageInfo.applicationInfo.loadIcon(packageManager)));
+                            mApk.setPic(s);
+                            mApk.setFileType("apk");
 //                Drawable drawable = packageInfo.applicationInfo.loadIcon(packageManager);
 //                fileInfo.setBitmap(drawableToBitmap(drawable));
-                        mApks.add(mApk);
+                            mApks.add(mApk);
+                        }
                     }
+                    mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
                 }
-                mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
-            }
-        }).start();
+            }).start();
+        }
     }
-
 }
