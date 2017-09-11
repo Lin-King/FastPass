@@ -111,6 +111,7 @@ public class VideoPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE)));
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
                 Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
                 mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                 if (mediaEntity.getSize() > 1000 * 800) {

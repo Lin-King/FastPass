@@ -19,6 +19,7 @@ public class FileInfo implements Serializable {
     private int result;//文件传送结果
     private int progress;//传输进度
     private boolean isOK;//是否选中
+    private String date;//日期
     //Apk
     private String pic;
     //mp3
@@ -28,6 +29,14 @@ public class FileInfo implements Serializable {
     private String albums; // 专辑  
     private String artist; // 艺术家   
     private String singer; //歌手   
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public boolean isOK() {
         return isOK;

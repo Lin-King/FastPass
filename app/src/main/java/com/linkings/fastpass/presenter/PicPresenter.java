@@ -145,6 +145,7 @@ public class PicPresenter {
                 mediaEntity.setFileName(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)));
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
+                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
                 if (mediaEntity.getSize() > 1000 * 100) {
                     if (list.size() < 10) {
                         //得到原图片  

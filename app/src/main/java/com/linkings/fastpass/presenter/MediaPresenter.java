@@ -114,6 +114,7 @@ public class MediaPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
                 if (mediaEntity.getSize() > 1000 * 800) {
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
