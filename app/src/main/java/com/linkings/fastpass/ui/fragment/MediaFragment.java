@@ -1,6 +1,7 @@
 package com.linkings.fastpass.ui.fragment;
 
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseFragment;
@@ -19,6 +20,8 @@ public class MediaFragment extends BaseFragment implements IMediaView {
 
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
+    @BindView(R.id.tv_num)
+    TextView mTvNum;
     private MediaPresenter mMediaPresenter;
 
     @Override
@@ -47,5 +50,11 @@ public class MediaFragment extends BaseFragment implements IMediaView {
             }
             if (!initializeUI) initializeUI = true;
         }
+    }
+
+    @Override
+    public void setNum(int size) {
+        String s = "本地音频（" + size + "）";
+        mTvNum.setText(s);
     }
 }

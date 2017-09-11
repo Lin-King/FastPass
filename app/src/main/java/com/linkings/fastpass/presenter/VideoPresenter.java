@@ -54,6 +54,7 @@ public class VideoPresenter {
                     case Constant.MSG_UPDATE_ADAPTER:
                         if (mVideoPresenter.mVideoAdapter != null) {
                             mVideoPresenter.mVideoAdapter.notifyDataSetChanged();
+                            mVideoPresenter.videoFragment.setNum(mVideoPresenter.mVideo.size());
                         }
                         break;
                 }

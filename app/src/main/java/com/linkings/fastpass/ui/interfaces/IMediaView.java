@@ -9,4 +9,5 @@ import com.linkings.fastpass.base.IBaseView;
  */
 
 public interface IMediaView extends IBaseView{
+    void setNum(int size);
 }

@@ -58,6 +58,7 @@ public class PicPresenter {
                     case Constant.MSG_UPDATE_ADAPTER:
                         if (mPicPresenter.mPicAdapter != null) {
                             mPicPresenter.mPicAdapter.notifyDataSetChanged();
+                            mPicPresenter.picFragment.setNum(mPicPresenter.mPic.size());
                         }
                         break;
                 }

@@ -55,6 +55,7 @@ public class MediaPresenter {
                     case Constant.MSG_UPDATE_ADAPTER:
                         if (mMediaPresenter.mMediaAdapter != null) {
                             mMediaPresenter.mMediaAdapter.notifyDataSetChanged();
+                            mMediaPresenter.mediaFragment.setNum(mMediaPresenter.mMp3.size());
                         }
                         break;
                 }

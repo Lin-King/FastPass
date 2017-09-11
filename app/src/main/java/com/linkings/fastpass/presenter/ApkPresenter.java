@@ -59,6 +59,7 @@ public class ApkPresenter {
                         if (mApkPresenter.mMApkAdapter != null) {
                             mApkPresenter.mMApkAdapter.notifyDataSetChanged();
                             mApkPresenter.apkFragment.hideProgress();
+                            mApkPresenter.apkFragment.setNum(mApkPresenter.mApks.size());
                         }
                         break;
                 }
