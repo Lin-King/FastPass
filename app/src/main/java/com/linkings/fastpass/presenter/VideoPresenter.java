@@ -13,6 +13,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.VideoAdapter;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
@@ -74,6 +75,8 @@ public class VideoPresenter {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FileInfo fileInfo = mVideo.get(position);
                 fileInfo.setOK(!fileInfo.isOK());
+                if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
+                else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mVideoAdapter.notifyDataSetChanged();
             }
         });
@@ -111,7 +114,8 @@ public class VideoPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE)));
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
+                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)));
+                mediaEntity.setFileType(mediaEntity.getFilePath().substring(mediaEntity.getFilePath().lastIndexOf(".") + 1));
                 Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
                 mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                 if (mediaEntity.getSize() > 1000 * 800) {

@@ -12,6 +12,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.MediaAdapter;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.utils.LogUtil;
@@ -76,6 +77,8 @@ public class MediaPresenter {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FileInfo fileInfo = mMp3.get(position);
                 fileInfo.setOK(!fileInfo.isOK());
+                if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
+                else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mMediaAdapter.notifyDataSetChanged();
             }
         });
@@ -114,7 +117,8 @@ public class MediaPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));
                 mediaEntity.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
+                mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED)));
+                mediaEntity.setFileType(mediaEntity.getFilePath().substring(mediaEntity.getFilePath().lastIndexOf(".") + 1));
                 if (mediaEntity.getSize() > 1000 * 800) {
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");

@@ -16,6 +16,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.PicAdapter;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.PicFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
@@ -23,6 +24,8 @@ import com.linkings.fastpass.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -78,6 +81,8 @@ public class PicPresenter {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FileInfo fileInfo = mPic.get(position);
                 fileInfo.setOK(!fileInfo.isOK());
+                if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
+                else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mPicAdapter.notifyDataSetChanged();
             }
         });
@@ -146,14 +151,8 @@ public class PicPresenter {
                 mediaEntity.setSize(cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE)));
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
                 mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)));
+                mediaEntity.setFileType(mediaEntity.getFilePath().substring(mediaEntity.getFilePath().lastIndexOf(".") + 1));
                 if (mediaEntity.getSize() > 1000 * 100) {
-                    if (list.size() < 10) {
-                        //得到原图片  
-                        Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
-                        //得到缩略图  
-                        pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
-                        mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
-                    }
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
                         mediaEntity.setArtist(str[0]);
@@ -163,6 +162,20 @@ public class PicPresenter {
                 }
             }
             cursor.close();
+        }
+        Collections.sort(list, new Comparator<FileInfo>() {
+            @Override
+            public int compare(FileInfo o1, FileInfo o2) {
+                return o2.getDate().compareTo(o1.getDate());
+            }
+        });
+        for (int i = 0; i < 10; i++) {
+            FileInfo mediaEntity = list.get(i);
+            //得到原图片  
+            Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
+            //得到缩略图  
+            pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
+            mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
         }
         return list;
     }

@@ -2,6 +2,7 @@ package com.linkings.fastpass.config;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.utils.LogUtil;
@@ -112,7 +113,11 @@ public class FileReceiver implements Runnable {
         if (!dirFile.exists()) {
             dirFile.mkdirs();
         }
-        return new File(dirFile, fileInfo.getFileName() + "." + fileInfo.getFileType());
+        if (!TextUtils.isEmpty(fileInfo.getFileType())) {
+            if (fileInfo.getFileType().equals("apk"))
+                return new File(dirFile, fileInfo.getFileName() + "." + fileInfo.getFileType());
+        }
+        return new File(dirFile, fileInfo.getFileName());
     }
 
     /**

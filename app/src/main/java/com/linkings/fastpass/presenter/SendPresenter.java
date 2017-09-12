@@ -8,11 +8,11 @@ import android.text.TextUtils;
 
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.SendActivity;
 import com.linkings.fastpass.ui.activity.SendListActivity;
-import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.utils.LogUtil;
 import com.linkings.fastpass.utils.TypeConvertUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
@@ -77,6 +77,7 @@ public class SendPresenter {
         mWifiAPBroadcastReceiver = new WifiAPBroadcastReceiver() {
             @Override
             public void onWifiApDisabled() {
+                LogUtil.i("======>>>onWifiApDisabled !!!");
                 String ssid = TextUtils.isEmpty(Build.DEVICE) ? Constant.DEFAULT_SSID : Build.DEVICE;
                 ApMgr.openAp(sendActivity, ssid, "");
             }
@@ -93,6 +94,10 @@ public class SendPresenter {
         };
         IntentFilter filter = new IntentFilter(WifiAPBroadcastReceiver.ACTION_WIFI_AP_STATE_CHANGED);
         sendActivity.registerReceiver(mWifiAPBroadcastReceiver, filter);
+//        if (!ApMgr.isApOn(sendActivity)) {
+////            ApMgr.closeAp(sendActivity);
+//            mWifiAPBroadcastReceiver.onWifiApDisabled();
+//        }
     }
 
     /**

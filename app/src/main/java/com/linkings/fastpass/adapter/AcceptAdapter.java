@@ -28,7 +28,7 @@ public class AcceptAdapter extends BaseQuickAdapter<ScanResult, AcceptAdapter.Vi
 
 
     public AcceptAdapter(@Nullable List<ScanResult> data) {
-        super(R.layout.item_media, data);
+        super(R.layout.item_wifilist, data);
     }
 
     @Override

@@ -10,9 +10,6 @@ import com.linkings.fastpass.utils.LogUtil;
 
 import java.lang.reflect.Method;
 
-/**
- * Created by AA on 2017/3/22.
- */
 public class ApMgr {
 
     /**

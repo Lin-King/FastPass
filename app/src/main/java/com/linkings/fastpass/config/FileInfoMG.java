@@ -1,9 +1,14 @@
 package com.linkings.fastpass.config;
 
+import android.os.Build;
+import android.util.ArrayMap;
+
 import com.linkings.fastpass.model.FileInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Lin on 2017/9/7.
@@ -14,9 +19,15 @@ import java.util.List;
 public class FileInfoMG {
 
     private List<FileInfo> mFileInfoList;
+    private Map<String, FileInfo> mFileInfoMap;
 
     private FileInfoMG() {
         mFileInfoList = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mFileInfoMap = new ArrayMap<>();
+        } else {
+            mFileInfoMap = new HashMap<>();
+        }
     }
 
     public static final FileInfoMG getInstance() {
@@ -28,10 +39,22 @@ public class FileInfoMG {
     }
 
     public List<FileInfo> getFileInfoList() {
+        mFileInfoList.clear();
+        for (Map.Entry<String, FileInfo> entry : mFileInfoMap.entrySet()) {
+            mFileInfoList.add(entry.getValue());
+        }
         return mFileInfoList;
     }
 
     public void cleanFileInfoList() {
-        mFileInfoList.clear();
+        mFileInfoMap.clear();
+    }
+
+    public void removeFileInfo(FileInfo fileInfo) {
+        mFileInfoMap.remove(fileInfo.getFilePath());
+    }
+
+    public void addFileInfo(FileInfo fileInfo) {
+        mFileInfoMap.put(fileInfo.getFilePath(), fileInfo);
     }
 }

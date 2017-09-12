@@ -92,8 +92,8 @@ public class AcceptPresenter {
         //开启WiFi，监听WiFi广播
         registerWifiReceiver();
         mWifiMgr = WifiMgr.getInstance(acceptActivity);
-        if (!mWifiMgr.isWifiEnabled()) mWifiMgr.startScan();
-        else clearWifiConfig();
+        if (mWifiMgr.isWifiEnabled()) mWifiMgr.startScan();
+        else mWifiMgr.openWifi();
         mWifiScanList = new ArrayList<>();
         mAcceptAdapter = new AcceptAdapter(mWifiScanList);
         recyclerview.setLayoutManager(new LinearLayoutManager(acceptActivity));
@@ -216,7 +216,8 @@ public class AcceptPresenter {
             if (fileInfos.size() > 0) {
                 for (FileInfo fileInfo : fileInfos) {
                     if (fileInfo != null && !TextUtils.isEmpty(fileInfo.getFilePath())) {
-                        FileInfoMG.getInstance().getFileInfoList().add(fileInfo);
+//                        FileInfoMG.getInstance().getFileInfoList().add(fileInfo);
+                        FileInfoMG.getInstance().addFileInfo(fileInfo);
                     }
                 }
                 //更新适配器
@@ -272,6 +273,7 @@ public class AcceptPresenter {
         public void onWifiDisabled() {
             //WiFi已关闭，清除可用WiFi列表
             LogUtil.i("WiFi已关闭，清除可用WiFi列表");
+            mWifiMgr.openWifi();
         }
 
         @Override

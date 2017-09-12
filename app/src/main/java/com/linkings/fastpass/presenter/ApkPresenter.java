@@ -14,6 +14,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.linkings.fastpass.adapter.ApkAdapter;
 import com.linkings.fastpass.config.Constant;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
@@ -78,6 +79,8 @@ public class ApkPresenter {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FileInfo fileInfo = mApks.get(position);
                 fileInfo.setOK(!fileInfo.isOK());
+                if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
+                else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mMApkAdapter.notifyDataSetChanged();
             }
         });
@@ -104,7 +107,7 @@ public class ApkPresenter {
                             mApk.setSize(file.length());
                             String s = BitmapUtil.bitmapToBase64(BitmapUtil.drawable2Bitmap(packageInfo.applicationInfo.loadIcon(packageManager)));
                             mApk.setPic(s);
-                            mApk.setFileType("apk");
+                            mApk.setFileType(mApk.getFilePath().substring(mApk.getFilePath().lastIndexOf(".") + 1));
 //                Drawable drawable = packageInfo.applicationInfo.loadIcon(packageManager);
 //                fileInfo.setBitmap(drawableToBitmap(drawable));
                             mApks.add(mApk);

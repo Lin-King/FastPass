@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import com.linkings.fastpass.app.MyApplication;
+import com.linkings.fastpass.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -284,11 +285,19 @@ public class WifiMgr {
         /* IP/netmask: 192.168.43.1/255.255.255.0 */
         String ipAddress = "192.168.43.1";
         DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+//        int address = dhcpInfo.gateway;
         int address = dhcpInfo.serverAddress;
+//        LogUtil.i("dhcpInfo.gateway " + dhcpInfo.gateway);
+//        LogUtil.i("dhcpInfo.ipAddress " + dhcpInfo.ipAddress);
+//        LogUtil.i("dhcpInfo.serverAddress " + dhcpInfo.serverAddress);
         ipAddress = ((address & 0xFF)
                 + "." + ((address >> 8) & 0xFF)
                 + "." + ((address >> 16) & 0xFF)
                 + "." + ((address >> 24) & 0xFF));
+        if (ipAddress.equals("192.168.1.1")) {
+            ipAddress = "192.168.43.1";
+            LogUtil.i("ipAddress " + ipAddress);
+        }
         return ipAddress;
     }
 
