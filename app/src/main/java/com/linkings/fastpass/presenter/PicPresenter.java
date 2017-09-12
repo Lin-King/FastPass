@@ -169,14 +169,15 @@ public class PicPresenter {
                 return o2.getDate().compareTo(o1.getDate());
             }
         });
-        for (int i = 0; i < 10; i++) {
-            FileInfo mediaEntity = list.get(i);
-            //得到原图片  
-            Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
-            //得到缩略图  
-            pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
-            mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
-        }
+        if (list.size() > 0)
+            for (int i = 0; i < 10; i++) {
+                FileInfo mediaEntity = list.get(i);
+                //得到原图片  
+                Bitmap pic = BitmapFactory.decodeFile(mediaEntity.getFilePath());
+                //得到缩略图  
+                pic = ThumbnailUtils.extractThumbnail(pic, 100, 100);
+                mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
+            }
         return list;
     }
 }

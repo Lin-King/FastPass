@@ -94,6 +94,9 @@ public class FileSender implements Runnable {
                 }
             }
         }
+        if (fileSize - total > 1000) {
+            throw new Exception();
+        }
         //关闭Socket输入输出流
         mOutputStream.flush();
         mOutputStream.close();

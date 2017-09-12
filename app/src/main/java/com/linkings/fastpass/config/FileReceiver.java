@@ -94,9 +94,13 @@ public class FileReceiver implements Runnable {
                 }
             }
         }
+//        if (fileSize - total > 1000) {
+//            if (mOnReceiveListener != null)
+//                mOnReceiveListener.onFailure(new Exception(), mFileInfo);
+//        }
+
         if (fileSize - total > 1000) {
-            if (mOnReceiveListener != null)
-                mOnReceiveListener.onFailure(new Exception(), mFileInfo);
+            throw new Exception();
         }
         //关闭Socket输入输出流
         mInputStream.close();

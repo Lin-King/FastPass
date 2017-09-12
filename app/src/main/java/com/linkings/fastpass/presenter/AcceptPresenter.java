@@ -175,6 +175,14 @@ public class AcceptPresenter {
                         tryCount++;
                     }
 
+                    final String finalServerIp = serverIp;
+                    acceptActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.show(acceptActivity, finalServerIp);
+                        }
+                    });
+                    
                     //创建UDP通信
                     if (mDatagramSocket == null) {
                         //解决：java.net.BindException: bind failed: EADDRINUSE (Address already in use)
