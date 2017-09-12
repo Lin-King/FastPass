@@ -12,7 +12,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import com.linkings.fastpass.app.MyApplication;
-import com.linkings.fastpass.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -294,10 +293,6 @@ public class WifiMgr {
                 + "." + ((address >> 8) & 0xFF)
                 + "." + ((address >> 16) & 0xFF)
                 + "." + ((address >> 24) & 0xFF));
-        if (ipAddress.equals("192.168.1.1")) {
-            ipAddress = "192.168.43.1";
-            LogUtil.i("ipAddress " + ipAddress);
-        }
         return ipAddress;
     }
 

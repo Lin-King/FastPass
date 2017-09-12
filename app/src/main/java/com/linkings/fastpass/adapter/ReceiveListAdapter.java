@@ -34,8 +34,9 @@ public class ReceiveListAdapter extends BaseQuickAdapter<FileInfo, ReceiveListAd
     @Override
     protected void convert(ViewHolder helper, FileInfo item) {
         helper.mTvName.setText(item.getFileName());
-        helper.mTvProgress.setText(item.getProgress() + "");
+        helper.mTvProgress.setText(item.getProgress() + "%");
         helper.mIvShortcut.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
+        helper.mPbFile.setProgress(item.getProgress());
     }
 
     static class ViewHolder extends BaseViewHolder {

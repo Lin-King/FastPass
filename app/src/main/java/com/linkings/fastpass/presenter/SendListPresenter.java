@@ -37,6 +37,7 @@ public class SendListPresenter {
     private SendListActivity sendListActivity;
     private WifiMgr mWifiMgr;
     private MyHandler mMyHandler;
+    private ServerSocket mServerSocket;
 
     /**
      * 发送文件线程列表数据
@@ -44,6 +45,7 @@ public class SendListPresenter {
     private List<FileSender> mFileSenderList = new ArrayList<>();
     private SendListAdapter mSendListAdapter;
     private SenderServerRunnable mSenderServerRunnable;
+    private Socket mSocket;
 
     public SendListPresenter(SendListActivity sendListActivity) {
         this.sendListActivity = sendListActivity;
@@ -92,8 +94,6 @@ public class SendListPresenter {
 
     private class SenderServerRunnable implements Runnable {
 
-        private ServerSocket mServerSocket;
-
         @Override
         public void run() {
             String serverIp = mWifiMgr.getIpAddressFromHotspot();
@@ -101,22 +101,22 @@ public class SendListPresenter {
             try {
                 mServerSocket = new ServerSocket(Constant.DEFAULT_SERVER_COM_PORT);
                 for (int i = 0; i < fileInfoList.size(); i++) {
-                    final FileInfo fileInfo = fileInfoList.get(i);
-                    Socket socket = mServerSocket.accept();
+                    final FileInfo fileinfo = fileInfoList.get(i);
+                    mSocket = mServerSocket.accept();
 //                    Socket socket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    FileSender fileSender = new FileSender(sendListActivity, socket, fileInfo, new FileSender.OnSendListener() {
+                    FileSender fileSender = new FileSender(sendListActivity, mSocket, fileinfo, new FileSender.OnSendListener() {
                         @Override
                         public void onStart() {
-                            mMyHandler.obtainMessage(Constant.MSG_SET_STATUS, "开始发送：" + fileInfo.getFileName()).sendToTarget();
+                            mMyHandler.obtainMessage(Constant.MSG_SET_STATUS, "开始发送：" + fileinfo.getFileName()).sendToTarget();
                         }
 
                         @Override
                         public void onProgress(long progress, long total) {
                             //更新发送进度视图
                             int i_progress = (int) (progress * 100 / total);
-                            LogUtil.i("正在发送：" + fileInfo.getFilePath() + "\n当前进度：" + i_progress);
-                            fileInfo.setProgress(i_progress);
+                            LogUtil.i("正在发送：" + fileinfo.getFilePath() + "\n当前进度：" + i_progress);
+                            fileinfo.setProgress(i_progress);
 
                             Message msg = new Message();
                             msg.what = MSG_UPDATE_PROGRESS;
@@ -129,7 +129,8 @@ public class SendListPresenter {
                         public void onSuccess(FileInfo fileInfo) {
                             //发送成功
                             mMyHandler.obtainMessage(MSG_SET_STATUS, "文件：" + fileInfo.getFileName() + "发送成功").sendToTarget();
-                            fileInfo.setResult(FileInfo.FLAG_SUCCESS);
+                            fileinfo.setResult(FileInfo.FLAG_SUCCESS);
+                            fileinfo.setProgress(100);
                             Message msg = new Message();
                             msg.what = MSG_UPDATE_PROGRESS;
                             msg.arg1 = finalI;
@@ -159,19 +160,6 @@ public class SendListPresenter {
             }
         }
 
-        /**
-         * 关闭Socket连接
-         */
-        void closeServerSocket() {
-            if (mServerSocket != null) {
-                try {
-                    mServerSocket.close();
-                    mServerSocket = null;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     /**
@@ -197,10 +185,29 @@ public class SendListPresenter {
         }
     }
 
-    public void cleanSocket() {
-        if (mSenderServerRunnable != null) {
-            mSenderServerRunnable.closeServerSocket();
-            mSenderServerRunnable = null;
+    /**
+     * 关闭Socket连接
+     */
+    public void closeServerSocket() {
+        if (mServerSocket != null) {
+            try {
+                if (!mServerSocket.isClosed()) {
+                    mServerSocket.close();
+                    mServerSocket = null;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (mSocket != null) {
+            try {
+                if (!mSocket.isClosed()) {
+                    mSocket.close();
+                    mSocket = null;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

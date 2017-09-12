@@ -96,20 +96,20 @@ public class ReceiveListPresenter {
             List<FileInfo> fileInfoList = FileInfoMG.getInstance().getFileInfoList();
             try {
                 for (int i = 0; i < fileInfoList.size(); i++) {
-                    final FileInfo fileInfo = fileInfoList.get(i);
+                    final FileInfo fileinfo = fileInfoList.get(i);
                     mClientSocket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    FileReceiver fileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileInfo, new FileReceiver.OnReceiveListener() {
+                    FileReceiver fileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileinfo, new FileReceiver.OnReceiveListener() {
                         @Override
                         public void onStart() {
-                            mMyHandler.obtainMessage(MSG_SET_STATUS, "开始接受：" + fileInfo.getFileName()).sendToTarget();
+                            mMyHandler.obtainMessage(MSG_SET_STATUS, "开始接受：" + fileinfo.getFileName()).sendToTarget();
                         }
 
                         @Override
                         public void onProgress(FileInfo fileInfo, long progress, long total) {
                             int i_progress = (int) (progress * 100 / total);
                             LogUtil.i("正在接收：" + fileInfo.getFilePath() + "\n当前进度：" + i_progress);
-                            fileInfo.setProgress(i_progress);
+                            fileinfo.setProgress(i_progress);
 
                             Message msg = new Message();
                             msg.what = MSG_UPDATE_PROGRESS;
@@ -121,7 +121,8 @@ public class ReceiveListPresenter {
                         @Override
                         public void onSuccess(FileInfo fileInfo) {
                             mMyHandler.obtainMessage(MSG_SET_STATUS, "文件：" + fileInfo.getFileName() + "接收成功").sendToTarget();
-                            fileInfo.setResult(FileInfo.FLAG_SUCCESS);
+                            fileinfo.setResult(FileInfo.FLAG_SUCCESS);
+                            fileinfo.setProgress(100);
 
                             Message msg = new Message();
                             msg.what = MSG_UPDATE_PROGRESS;

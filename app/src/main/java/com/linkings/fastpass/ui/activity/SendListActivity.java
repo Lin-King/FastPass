@@ -52,7 +52,7 @@ public class SendListActivity extends BaseActivity implements ISendListView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSendListPresenter.cleanSocket();
+        mSendListPresenter.closeServerSocket();
         if (mSendListPresenter.hasFileSending()) mSendListPresenter.stopAllFileSendingTask();
     }
 

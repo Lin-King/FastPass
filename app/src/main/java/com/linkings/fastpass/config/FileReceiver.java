@@ -94,6 +94,12 @@ public class FileReceiver implements Runnable {
                 }
             }
         }
+        if (fileSize - total > 1000) {
+            if (mOnReceiveListener != null)
+                mOnReceiveListener.onFailure(new Exception(), mFileInfo);
+        }
+        //关闭Socket输入输出流
+        mInputStream.close();
         //文件接收成功
         if (mOnReceiveListener != null) mOnReceiveListener.onSuccess(mFileInfo);
         mIsFinish = true;

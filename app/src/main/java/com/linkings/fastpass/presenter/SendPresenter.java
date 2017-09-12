@@ -14,6 +14,7 @@ import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.SendActivity;
 import com.linkings.fastpass.ui.activity.SendListActivity;
 import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.utils.TypeConvertUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
 import com.linkings.fastpass.wifitools.ApMgr;
@@ -129,11 +130,23 @@ public class SendPresenter {
             LogUtil.i("receiver get local Ip ----->>>" + localAddress);
             count++;
         }
+        final String finalLocalAddress = localAddress;
+        sendActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ToastUtil.show(sendActivity, finalLocalAddress);
+            }
+        });
+        if (localAddress.equals("192.168.1.1")) {
+            localAddress = "192.168.43.1";
+        }
         //这里使用UDP发送和接收指令 
         mDatagramSocket = new DatagramSocket(serverPort);
         while (true) {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            InetAddress ipAddress = InetAddress.getByName(localAddress);
+            receivePacket.setAddress(ipAddress);
             mDatagramSocket.receive(receivePacket);
             String response = new String(receivePacket.getData(), UTF8).trim();
             if (!TextUtils.isEmpty(response)) {
