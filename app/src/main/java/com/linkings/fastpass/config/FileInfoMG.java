@@ -46,6 +46,10 @@ public class FileInfoMG {
         return mFileInfoList;
     }
 
+    public int getListSize() {
+        return mFileInfoMap.size();
+    }
+
     public void cleanFileInfoList() {
         mFileInfoMap.clear();
     }

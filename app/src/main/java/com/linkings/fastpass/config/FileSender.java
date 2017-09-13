@@ -76,12 +76,7 @@ public class FileSender implements Runnable {
         while ((len = fis.read(bytes)) != -1) {
             synchronized (LOCK) {
                 if (mIsPause) {
-                    try {
-                        LOCK.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        LogUtil.i(e.toString());
-                    }
+                    LOCK.wait();
                 }
                 //写入文件
                 mOutputStream.write(bytes, 0, len);

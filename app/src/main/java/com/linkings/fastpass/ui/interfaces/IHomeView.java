@@ -12,9 +12,15 @@ import java.util.List;
  * Description: TOO
  */
 
-public interface IHomeView extends IBaseView{
+public interface IHomeView extends IBaseView {
 
     void initToolbar();
 
     void init(List<Fragment> mList, String[] title);
+
+    void toSendActivity();
+
+    void toAcceptActivity();
+
+    void setSendNum();
 }

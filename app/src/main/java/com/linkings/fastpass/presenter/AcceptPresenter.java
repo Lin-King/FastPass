@@ -92,7 +92,7 @@ public class AcceptPresenter {
         //开启WiFi，监听WiFi广播
         registerWifiReceiver();
         mWifiMgr = WifiMgr.getInstance(acceptActivity);
-        if (mWifiMgr.isWifiEnabled()) mWifiMgr.startScan();
+        if (mWifiMgr.isWifiEnabled()) clearWifiConfig();
         else mWifiMgr.openWifi();
         mWifiScanList = new ArrayList<>();
         mAcceptAdapter = new AcceptAdapter(mWifiScanList);
@@ -182,7 +182,7 @@ public class AcceptPresenter {
                             ToastUtil.show(acceptActivity, finalServerIp);
                         }
                     });
-                    
+
                     //创建UDP通信
                     if (mDatagramSocket == null) {
                         //解决：java.net.BindException: bind failed: EADDRINUSE (Address already in use)
@@ -258,8 +258,7 @@ public class AcceptPresenter {
 
     public void clearWifiConfig() {
 //        mWifiMgr.clearWifiConfig();
-        if (mWifiMgr.isWifi(acceptActivity))
-            mWifiMgr.disconnectWifi(mWifiMgr.getConnectedSSID());
+        if (mWifiMgr.isWifi(acceptActivity)) mWifiMgr.disconnectWifi(mWifiMgr.getConnectedSSID());
     }
 
     private interface OnWifiPasswordConfirmListener {

@@ -4,7 +4,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+import com.linkings.fastpass.R;
 import com.linkings.fastpass.adapter.ReceiveListAdapter;
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
@@ -42,6 +46,8 @@ public class ReceiveListPresenter {
     private WifiMgr mWifiMgr;
     private ReceiveListAdapter mReceiveListAdapter;
     private Socket mClientSocket;
+    private boolean isStop;
+    private FileReceiver mFileReceiver;
 
     public ReceiveListPresenter(ReceiveListActivity receiveListActivity) {
         this.receiveListActivity = receiveListActivity;
@@ -79,6 +85,20 @@ public class ReceiveListPresenter {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(receiveListActivity);
         recyclerview.setLayoutManager(linearLayoutManager);
         recyclerview.setAdapter(mReceiveListAdapter);
+        recyclerview.addOnItemTouchListener(new OnItemChildClickListener() {
+            @Override
+            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                switch (view.getId()) {
+                    case R.id.btn_operation:
+                        if (mFileReceiver != null) {
+                            isStop = !isStop;
+                            if (isStop) mFileReceiver.pause();
+                            else mFileReceiver.resume();
+                        }
+                        break;
+                }
+            }
+        });
         initReceiveServer();
     }
 
@@ -99,7 +119,7 @@ public class ReceiveListPresenter {
                     final FileInfo fileinfo = fileInfoList.get(i);
                     mClientSocket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    FileReceiver fileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileinfo, new FileReceiver.OnReceiveListener() {
+                    mFileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileinfo, new FileReceiver.OnReceiveListener() {
                         @Override
                         public void onStart() {
                             mMyHandler.obtainMessage(MSG_SET_STATUS, "开始接受：" + fileinfo.getFileName()).sendToTarget();
@@ -146,8 +166,8 @@ public class ReceiveListPresenter {
                         }
                     });
                     //加入线程池执行
-                    mFileReceiverList.add(fileReceiver);
-                    MyApplication.MAIN_EXECUTOR.execute(fileReceiver);
+                    mFileReceiverList.add(mFileReceiver);
+                    MyApplication.MAIN_EXECUTOR.execute(mFileReceiver);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

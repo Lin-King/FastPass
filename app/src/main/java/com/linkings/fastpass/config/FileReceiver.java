@@ -80,7 +80,9 @@ public class FileReceiver implements Runnable {
         long eTime = 0;
         while ((len = mInputStream.read(bytes)) != -1) {
             synchronized (LOCK) {
-                if (mIsPause) LOCK.wait();
+                if (mIsPause) {
+                    LOCK.wait();
+                }
                 //写入文件
                 fos.write(bytes, 0, len);
                 total = total + len;

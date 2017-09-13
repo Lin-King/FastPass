@@ -16,6 +16,7 @@ import com.linkings.fastpass.adapter.ApkAdapter;
 import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
 
@@ -82,6 +83,7 @@ public class ApkPresenter {
                 if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
                 else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mMApkAdapter.notifyDataSetChanged();
+                ((HomeActivity) apkFragment.getActivity()).setSendNum();
             }
         });
         readAPK();

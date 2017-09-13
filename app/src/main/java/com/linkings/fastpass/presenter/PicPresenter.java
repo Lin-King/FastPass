@@ -18,6 +18,7 @@ import com.linkings.fastpass.adapter.PicAdapter;
 import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.PicFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
 import com.linkings.fastpass.utils.LogUtil;
@@ -84,6 +85,7 @@ public class PicPresenter {
                 if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
                 else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mPicAdapter.notifyDataSetChanged();
+                ((HomeActivity) picFragment.getActivity()).setSendNum();
             }
         });
         recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {

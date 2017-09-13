@@ -14,6 +14,7 @@ import com.linkings.fastpass.adapter.MediaAdapter;
 import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.model.FileInfo;
+import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.utils.LogUtil;
 
@@ -80,6 +81,7 @@ public class MediaPresenter {
                 if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
                 else FileInfoMG.getInstance().removeFileInfo(fileInfo);
                 mMediaAdapter.notifyDataSetChanged();
+                ((HomeActivity) mediaFragment.getActivity()).setSendNum();
             }
         });
         readMp3();

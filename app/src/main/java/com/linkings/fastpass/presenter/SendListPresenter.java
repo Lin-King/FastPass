@@ -4,7 +4,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+import com.linkings.fastpass.R;
 import com.linkings.fastpass.adapter.SendListAdapter;
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
@@ -38,6 +42,7 @@ public class SendListPresenter {
     private WifiMgr mWifiMgr;
     private MyHandler mMyHandler;
     private ServerSocket mServerSocket;
+    private boolean isStop;
 
     /**
      * 发送文件线程列表数据
@@ -46,6 +51,7 @@ public class SendListPresenter {
     private SendListAdapter mSendListAdapter;
     private SenderServerRunnable mSenderServerRunnable;
     private Socket mSocket;
+    private FileSender mFileSender;
 
     public SendListPresenter(SendListActivity sendListActivity) {
         this.sendListActivity = sendListActivity;
@@ -83,6 +89,20 @@ public class SendListPresenter {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(sendListActivity);
         recyclerview.setLayoutManager(linearLayoutManager);
         recyclerview.setAdapter(mSendListAdapter);
+        recyclerview.addOnItemTouchListener(new OnItemChildClickListener() {
+            @Override
+            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                switch (view.getId()) {
+                    case R.id.btn_operation:
+                        if (mFileSender != null) {
+                            isStop = !isStop;
+                            if (isStop) mFileSender.pause();
+                            else mFileSender.resume();
+                        }
+                        break;
+                }
+            }
+        });
         initSendServer();
     }
 
@@ -105,7 +125,7 @@ public class SendListPresenter {
                     mSocket = mServerSocket.accept();
 //                    Socket socket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    FileSender fileSender = new FileSender(sendListActivity, mSocket, fileinfo, new FileSender.OnSendListener() {
+                    mFileSender = new FileSender(sendListActivity, mSocket, fileinfo, new FileSender.OnSendListener() {
                         @Override
                         public void onStart() {
                             mMyHandler.obtainMessage(Constant.MSG_SET_STATUS, "开始发送：" + fileinfo.getFileName()).sendToTarget();
@@ -151,8 +171,8 @@ public class SendListPresenter {
                         }
                     });
                     //添加到线程池执行
-                    mFileSenderList.add(fileSender);
-                    MyApplication.FILE_SENDER_EXECUTOR.execute(fileSender);
+                    mFileSenderList.add(mFileSender);
+                    MyApplication.FILE_SENDER_EXECUTOR.execute(mFileSender);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

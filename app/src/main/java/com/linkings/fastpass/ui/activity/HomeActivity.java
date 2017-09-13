@@ -1,11 +1,9 @@
 package com.linkings.fastpass.ui.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,15 +14,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.adapter.HomeAdapter;
 import com.linkings.fastpass.base.BaseActivity;
 import com.linkings.fastpass.presenter.HomePresenter;
 import com.linkings.fastpass.ui.interfaces.IHomeView;
-import com.linkings.fastpass.utils.DialogUtil;
 import com.linkings.fastpass.utils.LogUtil;
-import com.linkings.fastpass.wifitools.ApMgr;
 
 import java.util.List;
 
@@ -46,12 +45,16 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     TabLayout mTlHome;
     @BindView(R.id.vp_home)
     ViewPager mVpHome;
-    @BindView(R.id.fab)
-    FloatingActionButton mFab;
     @BindView(R.id.nav_view)
     NavigationView mNavView;
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
+    @BindView(R.id.bt_select)
+    Button mBtSelect;
+    @BindView(R.id.tv_num)
+    TextView mTvNum;
+    @BindView(R.id.bt_send)
+    Button mBtSend;
     private HomePresenter mHomePresenter;
 
     @Override
@@ -75,9 +78,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -129,22 +131,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
-    @OnClick(R.id.fab)
-    public void onViewClicked() {
-        DialogUtil.showDoubleDialog(context, "", "选择", "发送", "接受", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                SendActivity.startActivity(HomeActivity.this);
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                AcceptActivity.startActivity(HomeActivity.this);
-            }
-        });
-//        Snackbar.make(mFab, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-    }
-
     @Override
     public void initToolbar() {
         setSupportActionBar(mToolbar);
@@ -161,12 +147,30 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         mTlHome.setupWithViewPager(mVpHome);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (ApMgr.isApOn(context)) {
-            ApMgr.closeAp(context);
+    @OnClick({R.id.bt_select, R.id.bt_send})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.bt_select:
+                break;
+            case R.id.bt_send:
+                mHomePresenter.checkType();
+                break;
         }
+    }
+
+    @Override
+    public void toSendActivity() {
+        SendActivity.startActivity(HomeActivity.this);
+    }
+
+    @Override
+    public void toAcceptActivity() {
+        AcceptActivity.startActivity(HomeActivity.this);
+    }
+
+    @Override
+    public void setSendNum() {
+        mHomePresenter.setSendNum(mTvNum);
     }
 
     @Override
@@ -207,4 +211,5 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     void neverAgain() {
         LogUtil.i("neverAgain");
     }
+
 }

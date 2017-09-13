@@ -9,6 +9,7 @@ import com.linkings.fastpass.base.BaseActivity;
 import com.linkings.fastpass.presenter.SendPresenter;
 import com.linkings.fastpass.ui.interfaces.ISendView;
 import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.wifitools.ApMgr;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -49,6 +50,9 @@ public class SendActivity extends BaseActivity implements ISendView {
         super.onDestroy();
         mSendPresenter.unregisterHotSpotReceiver();
         mSendPresenter.closeUdpSocket();
+        if (ApMgr.isApOn(context)) {
+            ApMgr.closeAp(context);
+        }
     }
 
     public static void startActivity(Activity srcActivity) {

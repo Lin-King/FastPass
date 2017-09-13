@@ -15,4 +15,6 @@
     <string name="password">密码</string>
     <string name="str_name">名称</string>
     <string name="str_cancel">取消</string>
+    <string name="send">传送</string>
+    <string name="select">已选择</string>
 </resources>
