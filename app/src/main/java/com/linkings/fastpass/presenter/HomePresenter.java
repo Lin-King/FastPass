@@ -6,10 +6,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.linkings.fastpass.R;
+import com.linkings.fastpass.base.BaseFragment;
 import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
-import com.linkings.fastpass.ui.fragment.FileFragment;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.ui.fragment.PicFragment;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
@@ -27,6 +27,7 @@ import java.util.List;
 
 public class HomePresenter {
     private HomeActivity mHomeActivity;
+    private List<Fragment> mList;
 
     public HomePresenter(HomeActivity homeActivity) {
         mHomeActivity = homeActivity;
@@ -37,18 +38,18 @@ public class HomePresenter {
     }
 
     public void init() {
-        List<Fragment> mList = new ArrayList<>();
+        mList = new ArrayList<>();
         mList.add(new ApkFragment());
         mList.add(new VideoFragment());
         mList.add(new MediaFragment());
         mList.add(new PicFragment());
-        mList.add(new FileFragment());
+//        mList.add(new FileFragment());
         String[] title = {
                 mHomeActivity.intoString(R.string.application),
                 mHomeActivity.intoString(R.string.video),
                 mHomeActivity.intoString(R.string.music),
                 mHomeActivity.intoString(R.string.picture),
-                mHomeActivity.intoString(R.string.file)
+//                mHomeActivity.intoString(R.string.file)
         };
         mHomeActivity.init(mList, title);
     }
@@ -78,6 +79,18 @@ public class HomePresenter {
             tv.setText(num);
         } else {
             tv.setVisibility(View.GONE);
+        }
+    }
+
+    public void setNoOK() {
+        if (FileInfoMG.getInstance().isClear()) {
+            if (mList != null) {
+                for (int i = 0; i < mList.size(); i++) {
+                    BaseFragment fragment = (BaseFragment) mList.get(i);
+                    fragment.setNoOK();
+                }
+                FileInfoMG.getInstance().setClear(false);
+            }
         }
     }
 }

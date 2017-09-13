@@ -120,4 +120,14 @@ public class ApkPresenter {
             }).start();
         }
     }
+
+    public void setNoOK() {
+        if (FileInfoMG.getInstance().isClear()) {
+            for (FileInfo fileInfo : mApks) {
+                fileInfo.setOK(false);
+            }
+            mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+        }
+    }
+
 }

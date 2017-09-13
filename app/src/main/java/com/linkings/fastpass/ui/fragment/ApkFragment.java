@@ -45,4 +45,10 @@ public class ApkFragment extends BaseFragment implements IApkView {
         String s = "本地应用（" + size + "）";
         mTvNum.setText(s);
     }
+
+    @Override
+    public void setNoOK() {
+        super.setNoOK();
+        if (initializeUI)  mApkPresenter.setNoOK();
+    }
 }

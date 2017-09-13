@@ -184,15 +184,6 @@ public abstract class BaseFragment extends RxFragment implements IBaseView {
         return from + ",";
     }
 
-    public void saveData() {
-
-    }
-
-    public void refreshData() {
-
-    }
-
-    public void end() {
-
+    public void setNoOK() {
     }
 }

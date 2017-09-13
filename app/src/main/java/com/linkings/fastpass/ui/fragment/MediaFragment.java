@@ -57,4 +57,10 @@ public class MediaFragment extends BaseFragment implements IMediaView {
         String s = "本地音频（" + size + "）";
         mTvNum.setText(s);
     }
+
+    @Override
+    public void setNoOK() {
+        super.setNoOK();
+        if (initializeUI) mMediaPresenter.setNoOK();
+    }
 }

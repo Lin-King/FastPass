@@ -57,4 +57,10 @@ public class VideoFragment extends BaseFragment implements IVideoView {
         String s = "本地视频（" + size + "）";
         mTvNum.setText(s);
     }
+
+    @Override
+    public void setNoOK() {
+        super.setNoOK();
+        if (initializeUI) mVideoPresenter.setNoOK();
+    }
 }

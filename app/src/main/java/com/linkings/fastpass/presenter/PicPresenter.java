@@ -182,4 +182,14 @@ public class PicPresenter {
             }
         return list;
     }
+
+    public void setNoOK() {
+        if (FileInfoMG.getInstance().isClear()) {
+            for (FileInfo fileInfo : mPic) {
+                fileInfo.setOK(false);
+            }
+            mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+        }
+    }
+
 }

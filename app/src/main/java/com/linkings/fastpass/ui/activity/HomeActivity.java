@@ -86,6 +86,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setSendNum();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
@@ -171,6 +177,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void setSendNum() {
         mHomePresenter.setSendNum(mTvNum);
+        mHomePresenter.setNoOK();
     }
 
     @Override

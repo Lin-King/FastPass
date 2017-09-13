@@ -135,5 +135,14 @@ public class MediaPresenter {
         return list;
     }
 
+    public void setNoOK() {
+        if (FileInfoMG.getInstance().isClear()) {
+            for (FileInfo fileInfo : mMp3) {
+                fileInfo.setOK(false);
+            }
+            mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+        }
+    }
+
 }
 

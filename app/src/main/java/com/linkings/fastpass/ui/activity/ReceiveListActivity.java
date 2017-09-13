@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.presenter.ReceiveListPresenter;
 import com.linkings.fastpass.ui.interfaces.IReceiveListView;
 
@@ -55,6 +56,7 @@ public class ReceiveListActivity extends BaseActivity implements IReceiveListVie
         mReceiveListPresenter.closeClientSocket();
         if (mReceiveListPresenter.hasFileReceiving())
             mReceiveListPresenter.stopAllFileReceivingTask();
+        FileInfoMG.getInstance().cleanFileInfoList();
     }
 
     public static void startActivity(Activity srcActivity) {

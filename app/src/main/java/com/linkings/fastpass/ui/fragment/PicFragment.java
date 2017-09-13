@@ -57,4 +57,10 @@ public class PicFragment extends BaseFragment implements IPicView {
         String s = "本地图片（" + size + "）";
         mTvNum.setText(s);
     }
+
+    @Override
+    public void setNoOK() {
+        super.setNoOK();
+        if (initializeUI)   mPicPresenter.setNoOK();
+    }
 }

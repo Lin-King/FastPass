@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
+import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.presenter.SendListPresenter;
 import com.linkings.fastpass.ui.interfaces.ISendListView;
 
@@ -54,6 +55,7 @@ public class SendListActivity extends BaseActivity implements ISendListView {
         super.onDestroy();
         mSendListPresenter.closeServerSocket();
         if (mSendListPresenter.hasFileSending()) mSendListPresenter.stopAllFileSendingTask();
+        FileInfoMG.getInstance().cleanFileInfoList();
     }
 
     public static void startActivity(Activity srcActivity) {

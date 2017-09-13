@@ -118,14 +118,14 @@ public class VideoPresenter {
                 mediaEntity.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
                 mediaEntity.setDate(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED)));
                 mediaEntity.setFileType(mediaEntity.getFilePath().substring(mediaEntity.getFilePath().lastIndexOf(".") + 1));
-                Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
-                mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                 if (mediaEntity.getSize() > 1000 * 800) {
                     if (mediaEntity.getTitle().contains("-")) {
                         String[] str = mediaEntity.getTitle().split("-");
                         mediaEntity.setArtist(str[0]);
                         mediaEntity.setTitle(str[1]);
                     }
+                    Bitmap pic = BitmapUtil.getVideoThumbnail(mediaEntity.getFilePath());
+                    mediaEntity.setPic(BitmapUtil.bitmapToBase64(pic));
                     list.add(mediaEntity);
                 }
             }
@@ -133,4 +133,14 @@ public class VideoPresenter {
         }
         return list;
     }
+
+    public void setNoOK() {
+        if (FileInfoMG.getInstance().isClear()) {
+            for (FileInfo fileInfo : mVideo) {
+                fileInfo.setOK(false);
+            }
+            mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
+        }
+    }
+
 }

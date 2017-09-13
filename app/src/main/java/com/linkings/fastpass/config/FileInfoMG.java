@@ -20,6 +20,7 @@ public class FileInfoMG {
 
     private List<FileInfo> mFileInfoList;
     private Map<String, FileInfo> mFileInfoMap;
+    private boolean isClear;
 
     private FileInfoMG() {
         mFileInfoList = new ArrayList<>();
@@ -46,12 +47,21 @@ public class FileInfoMG {
         return mFileInfoList;
     }
 
+    public boolean isClear() {
+        return isClear;
+    }
+
+    public void setClear(boolean clear) {
+        isClear = clear;
+    }
+
     public int getListSize() {
         return mFileInfoMap.size();
     }
 
     public void cleanFileInfoList() {
         mFileInfoMap.clear();
+        setClear(true);
     }
 
     public void removeFileInfo(FileInfo fileInfo) {
