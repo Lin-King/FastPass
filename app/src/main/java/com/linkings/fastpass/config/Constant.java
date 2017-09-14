@@ -81,5 +81,6 @@ public class Constant {
     public static final String ROOT_PATH_MP3 = Environment.getExternalStorageDirectory() + File.separator + "FastPass/mp3";
     public static final String ROOT_PATH_MP4 = Environment.getExternalStorageDirectory() + File.separator + "FastPass/mp4";
     public static final String ROOT_PATH_PIC = Environment.getExternalStorageDirectory() + File.separator + "FastPass/pic";
+    public static final String ROOT_PATH_FILE = Environment.getExternalStorageDirectory() + File.separator + "FastPass/file";
 
 }

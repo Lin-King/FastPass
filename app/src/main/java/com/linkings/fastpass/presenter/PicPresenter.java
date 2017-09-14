@@ -131,7 +131,7 @@ public class PicPresenter {
             public void run() {
                 mPic.clear();
                 mPic.addAll(getVideoData(picFragment.getContext()));
-                LogUtil.i(mPic.size() + "");
+//                LogUtil.i(mPic.size() + "");
                 mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
                 picFragment.hideProgress();
             }

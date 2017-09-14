@@ -126,7 +126,7 @@ public class FileReceiver implements Runnable {
      */
     public static File gerateLocalFile(FileInfo fileInfo) {
         LogUtil.i("fileInfo.getFileType() " + fileInfo.getFileType());
-        String path = Constant.ROOT_PATH;
+        String path;
         switch (fileInfo.getFileType()) {
             case "mp4":
                 path = Constant.ROOT_PATH_MP4;
@@ -141,6 +141,9 @@ public class FileReceiver implements Runnable {
             case "jpeg":
             case "png":
                 path = Constant.ROOT_PATH_PIC;
+                break;
+            default:
+                path = Constant.ROOT_PATH_FILE;
                 break;
         }
         File dirFile = new File(path);

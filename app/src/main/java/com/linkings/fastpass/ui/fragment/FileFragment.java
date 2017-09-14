@@ -33,7 +33,20 @@ public class FileFragment extends BaseFragment implements IFileView {
 
     @Override
     public void initView() {
-        mFilePresenter.init(mRecyclerview);
+        if (initializeUI) mFilePresenter.init(mRecyclerview);
+    }
+    
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (!initializeUI && initializeFragment) {
+                initializeUI = true;
+                initView();
+                return;
+            }
+            if (!initializeUI) initializeUI = true;
+        }
     }
 
     @Override

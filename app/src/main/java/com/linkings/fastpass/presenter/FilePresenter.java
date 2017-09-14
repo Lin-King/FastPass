@@ -19,6 +19,7 @@ import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.FileFragment;
 import com.linkings.fastpass.utils.LogUtil;
 import com.linkings.fastpass.utils.SDCardUtil;
+import com.linkings.fastpass.utils.ToastUtil;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -97,6 +98,7 @@ public class FilePresenter {
                     return;
                 }
                 if (fl.isFile()) {
+//                    ToastUtil.show(fileFragment.getContext(), fileInfo.getFilePath());
                     fileInfo.setOK(!fileInfo.isOK());
                     if (fileInfo.isOK()) FileInfoMG.getInstance().addFileInfo(fileInfo);
                     else FileInfoMG.getInstance().removeFileInfo(fileInfo);
@@ -145,6 +147,8 @@ public class FilePresenter {
                     FileInfo fileInfo = new FileInfo();
                     fileInfo.setFileName(file.getName());
                     fileInfo.setFilePath(file.getPath());
+                    fileInfo.setSize(file.length());
+                    fileInfo.setFileType("");
                     mList.add(fileInfo);
                 }
                 Collections.sort(mList, new CustomComparator());
