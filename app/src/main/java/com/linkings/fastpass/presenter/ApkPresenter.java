@@ -103,7 +103,7 @@ public class ApkPresenter {
 //                Log.i("Lin", "package path : " + packageInfo.applicationInfo.sourceDir);
 //                Log.i("Lin", "apk name : " + packageInfo.applicationInfo.loadLabel(packageManager));
                             FileInfo mApk = new FileInfo();
-                            mApk.setFileName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                            mApk.setFileName(packageInfo.applicationInfo.loadLabel(packageManager).toString() + ".apk");
                             mApk.setFilePath(packageInfo.applicationInfo.sourceDir);
                             File file = new File(packageInfo.applicationInfo.sourceDir);
                             mApk.setSize(file.length());

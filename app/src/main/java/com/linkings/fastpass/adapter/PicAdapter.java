@@ -34,7 +34,7 @@ public class PicAdapter extends BaseQuickAdapter<FileInfo, PicAdapter.ViewHolder
     protected void convert(ViewHolder holder, FileInfo item) {
         if (!TextUtils.isEmpty(item.getPic())) {
             holder.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
-        }else {
+        } else {
             holder.mIvIcon.setImageResource(R.mipmap.ic_music_note_red_100_24dp);
         }
         holder.mTvName.setText(item.getFileName());

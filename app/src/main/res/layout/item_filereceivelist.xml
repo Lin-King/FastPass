@@ -48,7 +48,7 @@
 
                 <TextView
                     android:id="@+id/tv_progress"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:textColor="#5000"
@@ -59,12 +59,12 @@
         <Button
             android:id="@+id/btn_operation"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/rb_select_circular_bead_bg_s"
             android:gravity="center"
-            android:text="@string/str_cancel"
+            android:text="@string/pause"
             android:textColor="#fff"
             android:textSize="16sp"/>
     </LinearLayout>

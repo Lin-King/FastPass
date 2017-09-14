@@ -40,6 +40,14 @@ public class FileSender implements Runnable {
         mOnSendListener = onSendListener;
     }
 
+    public boolean isPause() {
+        return mIsPause;
+    }
+
+    public void setPause(boolean pause) {
+        mIsPause = pause;
+    }
+
     @Override
     public void run() {
         if (mIsStop) return;

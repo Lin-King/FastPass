@@ -46,8 +46,6 @@ public class ReceiveListPresenter {
     private WifiMgr mWifiMgr;
     private ReceiveListAdapter mReceiveListAdapter;
     private Socket mClientSocket;
-    private boolean isStop;
-    private FileReceiver mFileReceiver;
 
     public ReceiveListPresenter(ReceiveListActivity receiveListActivity) {
         this.receiveListActivity = receiveListActivity;
@@ -90,10 +88,10 @@ public class ReceiveListPresenter {
             public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 switch (view.getId()) {
                     case R.id.btn_operation:
-                        if (mFileReceiver != null) {
-                            isStop = !isStop;
-                            if (isStop) mFileReceiver.pause();
-                            else mFileReceiver.resume();
+                        FileReceiver fileReceiver = mFileReceiverList.get(position);
+                        if (fileReceiver != null) {
+                            if (!fileReceiver.isPause()) fileReceiver.pause();
+                            else fileReceiver.resume();
                         }
                         break;
                 }
@@ -119,7 +117,7 @@ public class ReceiveListPresenter {
                     final FileInfo fileinfo = fileInfoList.get(i);
                     mClientSocket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    mFileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileinfo, new FileReceiver.OnReceiveListener() {
+                    FileReceiver mFileReceiver = new FileReceiver(receiveListActivity, mClientSocket, fileinfo, new FileReceiver.OnReceiveListener() {
                         @Override
                         public void onStart() {
                             mMyHandler.obtainMessage(MSG_SET_STATUS, "开始接受：" + fileinfo.getFileName()).sendToTarget();

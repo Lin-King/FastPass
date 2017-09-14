@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <ImageView
+            android:id="@+id/iv_pic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:contentDescription="@string/icon"
+            android:src="@mipmap/ic_folder_yellow_300_24dp"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="2"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:padding="10dp"
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/iv_ok"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="#9fff"
+            android:contentDescription="@string/icon"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_check_box_blue_400_24dp"
+            android:visibility="visible"/>
+    </LinearLayout>
+
+
+    <View style="@style/divider_x"/>
+
+</LinearLayout>

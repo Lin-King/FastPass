@@ -1,5 +1,9 @@
 package com.linkings.fastpass.config;
 
+import android.os.Environment;
+
+import java.io.File;
+
 /**
  * Created by Lin on 2017/9/4.
  * Time: 17:50
@@ -71,5 +75,11 @@ public class Constant {
      * 设置当前状态
      */
     public static final int MSG_SET_STATUS = 3;
+
+    public static final String ROOT_PATH = Environment.getExternalStorageDirectory() + File.separator + "FastPass/";
+    public static final String ROOT_PATH_APK = Environment.getExternalStorageDirectory() + File.separator + "FastPass/apk";
+    public static final String ROOT_PATH_MP3 = Environment.getExternalStorageDirectory() + File.separator + "FastPass/mp3";
+    public static final String ROOT_PATH_MP4 = Environment.getExternalStorageDirectory() + File.separator + "FastPass/mp4";
+    public static final String ROOT_PATH_PIC = Environment.getExternalStorageDirectory() + File.separator + "FastPass/pic";
 
 }

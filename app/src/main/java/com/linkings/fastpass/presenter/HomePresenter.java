@@ -10,6 +10,7 @@ import com.linkings.fastpass.base.BaseFragment;
 import com.linkings.fastpass.config.FileInfoMG;
 import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.ApkFragment;
+import com.linkings.fastpass.ui.fragment.FileFragment;
 import com.linkings.fastpass.ui.fragment.MediaFragment;
 import com.linkings.fastpass.ui.fragment.PicFragment;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
@@ -43,13 +44,13 @@ public class HomePresenter {
         mList.add(new VideoFragment());
         mList.add(new MediaFragment());
         mList.add(new PicFragment());
-//        mList.add(new FileFragment());
+        mList.add(new FileFragment());
         String[] title = {
                 mHomeActivity.intoString(R.string.application),
                 mHomeActivity.intoString(R.string.video),
                 mHomeActivity.intoString(R.string.music),
                 mHomeActivity.intoString(R.string.picture),
-//                mHomeActivity.intoString(R.string.file)
+                mHomeActivity.intoString(R.string.file)
         };
         mHomeActivity.init(mList, title);
     }

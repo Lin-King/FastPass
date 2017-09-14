@@ -1,9 +1,13 @@
 package com.linkings.fastpass.ui.fragment;
 
+import android.support.v7.widget.RecyclerView;
+
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseFragment;
 import com.linkings.fastpass.presenter.FilePresenter;
 import com.linkings.fastpass.ui.interfaces.IFileView;
+
+import butterknife.BindView;
 
 /**
  * Created by Lin on 2017/9/9.
@@ -13,6 +17,8 @@ import com.linkings.fastpass.ui.interfaces.IFileView;
 
 public class FileFragment extends BaseFragment implements IFileView {
 
+    @BindView(R.id.recyclerview)
+    RecyclerView mRecyclerview;
     private FilePresenter mFilePresenter;
 
     @Override
@@ -27,6 +33,12 @@ public class FileFragment extends BaseFragment implements IFileView {
 
     @Override
     public void initView() {
+        mFilePresenter.init(mRecyclerview);
+    }
 
+    @Override
+    public void setNoOK() {
+        super.setNoOK();
+        if (initializeUI) mFilePresenter.setNoOK();
     }
 }

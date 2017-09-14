@@ -18,7 +18,6 @@ import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.ui.activity.HomeActivity;
 import com.linkings.fastpass.ui.fragment.VideoFragment;
 import com.linkings.fastpass.utils.BitmapUtil;
-import com.linkings.fastpass.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ public class VideoPresenter {
                 if (mVideo != null) {
                     mVideo.clear();
                     mVideo.addAll(getVideoData(videoFragment.getContext()));
-                    LogUtil.i(mVideo.size() + "");
+//                    LogUtil.i(mVideo.size() + "");
                     mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
                     videoFragment.hideProgress();
                 }

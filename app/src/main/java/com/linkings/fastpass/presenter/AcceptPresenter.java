@@ -101,6 +101,7 @@ public class AcceptPresenter {
         mAcceptAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                if (mWifiMgr.isWifiEnabled()) clearWifiConfig();
                 final ScanResult scanResult = mWifiScanList.get(position);
                 final String[] passwordSSID = {""};
                 mSelectedSSID = scanResult.SSID;
@@ -201,7 +202,7 @@ public class AcceptPresenter {
                     //接收文件列表
                     //noinspection InfiniteLoopStatement
                     while (true) {
-                        byte[] receiveData = new byte[1024];
+                        byte[] receiveData = new byte[1024 * 10];
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         mDatagramSocket.receive(receivePacket);
                         String response = new String(receivePacket.getData()).trim();
@@ -212,6 +213,7 @@ public class AcceptPresenter {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    LogUtil.i("接收到的消息 -------->>>" + e.toString());
                 }
             }
         }.start();
@@ -224,7 +226,6 @@ public class AcceptPresenter {
             if (fileInfos.size() > 0) {
                 for (FileInfo fileInfo : fileInfos) {
                     if (fileInfo != null && !TextUtils.isEmpty(fileInfo.getFilePath())) {
-//                        FileInfoMG.getInstance().getFileInfoList().add(fileInfo);
                         FileInfoMG.getInstance().addFileInfo(fileInfo);
                     }
                 }

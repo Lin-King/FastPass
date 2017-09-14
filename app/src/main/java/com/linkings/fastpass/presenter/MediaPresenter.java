@@ -94,7 +94,7 @@ public class MediaPresenter {
                 if (mMp3 != null) {
                     mMp3.clear();
                     mMp3.addAll(getMusicData(mediaFragment.getContext()));
-                    LogUtil.i(mMp3.size() + "");
+//                    LogUtil.i(mMp3.size() + "");
                     mMyHandler.sendEmptyMessage(Constant.MSG_UPDATE_ADAPTER);
                     mediaFragment.hideProgress();
                 }

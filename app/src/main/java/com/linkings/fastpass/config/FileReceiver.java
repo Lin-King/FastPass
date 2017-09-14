@@ -1,8 +1,6 @@
 package com.linkings.fastpass.config;
 
 import android.content.Context;
-import android.os.Environment;
-import android.text.TextUtils;
 
 import com.linkings.fastpass.model.FileInfo;
 import com.linkings.fastpass.utils.LogUtil;
@@ -21,9 +19,8 @@ import java.net.Socket;
 
 public class FileReceiver implements Runnable {
 
-    public static final String ROOT_PATH = Environment.getExternalStorageDirectory() + File.separator + "FastPass/";
     public static final int BYTE_SIZE_HEADER = 1024 * 10;
-    public static final int BYTE_SIZE_DATA = 1024 * 4; //字节数组长度
+    private static final int BYTE_SIZE_DATA = 1024 * 4; //字节数组长度
     public static final String UTF_8 = "UTF-8";//传输字节类型
     private Context mContext;
     private FileInfo mFileInfo;//待发送的文件数据
@@ -41,6 +38,14 @@ public class FileReceiver implements Runnable {
         mSocket = socket;
         mFileInfo = fileInfo;
         mOnReceiveListener = onReceiveListener;
+    }
+
+    public boolean isPause() {
+        return mIsPause;
+    }
+
+    public void setPause(boolean pause) {
+        mIsPause = pause;
     }
 
     @Override
@@ -121,14 +126,31 @@ public class FileReceiver implements Runnable {
      */
     public static File gerateLocalFile(FileInfo fileInfo) {
         LogUtil.i("fileInfo.getFileType() " + fileInfo.getFileType());
-        File dirFile = new File(ROOT_PATH);
+        String path = Constant.ROOT_PATH;
+        switch (fileInfo.getFileType()) {
+            case "mp4":
+                path = Constant.ROOT_PATH_MP4;
+                break;
+            case "mp3":
+                path = Constant.ROOT_PATH_MP3;
+                break;
+            case "apk":
+                path = Constant.ROOT_PATH_APK;
+                break;
+            case "jpg":
+            case "jpeg":
+            case "png":
+                path = Constant.ROOT_PATH_PIC;
+                break;
+        }
+        File dirFile = new File(path);
         if (!dirFile.exists()) {
             dirFile.mkdirs();
         }
-        if (!TextUtils.isEmpty(fileInfo.getFileType())) {
-            if (fileInfo.getFileType().equals("apk"))
-                return new File(dirFile, fileInfo.getFileName() + "." + fileInfo.getFileType());
-        }
+//        if (!TextUtils.isEmpty(fileInfo.getFileType())) {
+//            if (fileInfo.getFileType().equals("apk"))
+//                return new File(dirFile, fileInfo.getFileName() + "." + fileInfo.getFileType());
+//        }
         return new File(dirFile, fileInfo.getFileName());
     }
 

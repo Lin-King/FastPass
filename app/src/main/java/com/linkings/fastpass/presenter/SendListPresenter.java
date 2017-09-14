@@ -42,7 +42,6 @@ public class SendListPresenter {
     private WifiMgr mWifiMgr;
     private MyHandler mMyHandler;
     private ServerSocket mServerSocket;
-    private boolean isStop;
 
     /**
      * 发送文件线程列表数据
@@ -51,7 +50,6 @@ public class SendListPresenter {
     private SendListAdapter mSendListAdapter;
     private SenderServerRunnable mSenderServerRunnable;
     private Socket mSocket;
-    private FileSender mFileSender;
 
     public SendListPresenter(SendListActivity sendListActivity) {
         this.sendListActivity = sendListActivity;
@@ -94,10 +92,10 @@ public class SendListPresenter {
             public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 switch (view.getId()) {
                     case R.id.btn_operation:
-                        if (mFileSender != null) {
-                            isStop = !isStop;
-                            if (isStop) mFileSender.pause();
-                            else mFileSender.resume();
+                        FileSender fileSender = mFileSenderList.get(position);
+                        if (fileSender != null) {
+                            if (!fileSender.isPause()) fileSender.pause();
+                            else fileSender.resume();
                         }
                         break;
                 }
@@ -125,7 +123,7 @@ public class SendListPresenter {
                     mSocket = mServerSocket.accept();
 //                    Socket socket = new Socket(serverIp, Constant.DEFAULT_SERVER_COM_PORT);
                     final int finalI = i;
-                    mFileSender = new FileSender(sendListActivity, mSocket, fileinfo, new FileSender.OnSendListener() {
+                    FileSender mFileSender = new FileSender(sendListActivity, mSocket, fileinfo, new FileSender.OnSendListener() {
                         @Override
                         public void onStart() {
                             mMyHandler.obtainMessage(Constant.MSG_SET_STATUS, "开始发送：" + fileinfo.getFileName()).sendToTarget();

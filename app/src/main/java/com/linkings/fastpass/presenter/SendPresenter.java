@@ -25,7 +25,6 @@ import java.lang.ref.WeakReference;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.linkings.fastpass.config.Constant.MSG_FILE_RECEIVER_INIT_SUCCESS;
@@ -176,14 +175,12 @@ public class SendPresenter {
      * 通过UDP发送文件列表给接收端
      */
     private void sendFileInfoList(InetAddress ipAddress, int serverPort) {
-        if (FileInfoMG.getInstance().getFileInfoList().size() > 0) {
-            List<FileInfo> mAllFileInfos = new ArrayList<>();
-            mAllFileInfos.addAll(FileInfoMG.getInstance().getFileInfoList());
-            for (FileInfo fileInfo : mAllFileInfos) {
-                fileInfo.setPic("");
-            }
+        if (FileInfoMG.getInstance().getListSize() > 0) {
+            List<FileInfo> fileInfoList = FileInfoMG.getInstance().getFileInfoList();
+            List<FileInfo> fileInfos = TypeConvertUtil.toObject(TypeConvertUtil.toJsonStr(new FileInfoJson(fileInfoList)), FileInfoJson.class).getFileInfos();
+            for (FileInfo fileInfo : fileInfos) fileInfo.setPic("");
             try {
-                FileInfoJson fileInfoJson = new FileInfoJson(mAllFileInfos);
+                FileInfoJson fileInfoJson = new FileInfoJson(fileInfos);
                 String jsonStr = TypeConvertUtil.toJsonStr(fileInfoJson);
                 DatagramPacket sendFileInfoPacket = new DatagramPacket(jsonStr.getBytes(), jsonStr.getBytes().length, ipAddress, serverPort);
                 mDatagramSocket.send(sendFileInfoPacket);

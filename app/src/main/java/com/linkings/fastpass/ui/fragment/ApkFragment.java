@@ -49,6 +49,6 @@ public class ApkFragment extends BaseFragment implements IApkView {
     @Override
     public void setNoOK() {
         super.setNoOK();
-        if (initializeUI)  mApkPresenter.setNoOK();
+        if (initializeFragment) mApkPresenter.setNoOK();
     }
 }
