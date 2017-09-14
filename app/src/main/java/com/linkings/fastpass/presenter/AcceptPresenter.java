@@ -67,7 +67,6 @@ public class AcceptPresenter {
         mMyHandler = new MyHandler(acceptActivity);
     }
 
-
     private static class MyHandler extends Handler {
         private WeakReference<AcceptActivity> activityWeakReference;
 
