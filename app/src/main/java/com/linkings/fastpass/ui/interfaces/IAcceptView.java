@@ -8,5 +8,7 @@ import com.linkings.fastpass.base.IBaseView;
  * Description: TOO
  */
 
-public interface IAcceptView extends IBaseView{
+public interface IAcceptView extends IBaseView {
+    void toBack();
+    
 }

@@ -4,8 +4,11 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.View;
 
+import com.linkings.fastpass.R;
 import com.linkings.fastpass.app.MyApplication;
 import com.linkings.fastpass.config.Constant;
 import com.linkings.fastpass.config.FileInfoMG;
@@ -68,6 +71,19 @@ public class SendPresenter {
     public SendPresenter(SendActivity sendActivity) {
         this.sendActivity = sendActivity;
         mMyHandler = new MyHandler(sendActivity);
+    }
+
+    public void setTitle(Toolbar toolbar) {
+        toolbar.setTitle("");
+//        toolbar.setTitle(acceptActivity.intoString(R.string.music));
+        toolbar.setNavigationIcon(R.mipmap.back);
+        sendActivity.setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendActivity.toBack();
+            }
+        });
     }
 
     public void init() {

@@ -9,6 +9,7 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -85,6 +86,19 @@ public class AcceptPresenter {
                 }
             }
         }
+    }
+
+    public void setTitle(Toolbar toolbar) {
+        toolbar.setTitle("");
+//        toolbar.setTitle(acceptActivity.intoString(R.string.music));
+        toolbar.setNavigationIcon(R.mipmap.back);
+        acceptActivity.setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                acceptActivity.toBack();
+            }
+        });
     }
 
     public void init() {

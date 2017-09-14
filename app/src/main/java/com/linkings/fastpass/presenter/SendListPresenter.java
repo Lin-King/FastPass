@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -81,6 +82,18 @@ public class SendListPresenter {
         }
     }
 
+    public void setTitle(Toolbar toolbar) {
+        toolbar.setTitle("");
+//        toolbar.setTitle(acceptActivity.intoString(R.string.music));
+        toolbar.setNavigationIcon(R.mipmap.back);
+        sendListActivity.setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendListActivity.toBack();
+            }
+        });
+    }
     public void init(RecyclerView recyclerview) {
         List<FileInfo> fileInfoList = FileInfoMG.getInstance().getFileInfoList();
         mSendListAdapter = new SendListAdapter(fileInfoList);

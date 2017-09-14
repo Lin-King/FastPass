@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
@@ -31,12 +32,15 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class SendListActivity extends BaseActivity implements ISendListView {
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
     private SendListPresenter mSendListPresenter;
 
     @Override
     public void initView() {
+        mSendListPresenter.setTitle(mToolbar);
         SendListActivityPermissionsDispatcher.needsWithCheck(this);
     }
 
@@ -88,5 +92,10 @@ public class SendListActivity extends BaseActivity implements ISendListView {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @OnNeverAskAgain({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void neverAskAgain() {
+    }
+
+    @Override
+    public void toBack() {
+        finish();
     }
 }

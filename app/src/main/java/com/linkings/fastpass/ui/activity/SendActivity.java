@@ -3,6 +3,7 @@ package com.linkings.fastpass.ui.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v7.widget.Toolbar;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
@@ -11,6 +12,7 @@ import com.linkings.fastpass.ui.interfaces.ISendView;
 import com.linkings.fastpass.utils.LogUtil;
 import com.linkings.fastpass.wifitools.ApMgr;
 
+import butterknife.BindView;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -27,10 +29,13 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class SendActivity extends BaseActivity implements ISendView {
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     private SendPresenter mSendPresenter;
 
     @Override
     public void initView() {
+        mSendPresenter.setTitle(mToolbar);
         // if (MPermission.requestSettingActivity(this, MPermission.CODE_WRITE_SETTINGS)) init();
         SendActivityPermissionsDispatcher.needsWithCheck(this);
     }
@@ -85,6 +90,11 @@ public class SendActivity extends BaseActivity implements ISendView {
     @OnNeverAskAgain(Manifest.permission.WRITE_SETTINGS)
     void neverAskAgain() {
         LogUtil.i("neverAskAgain");
+    }
+
+    @Override
+    public void toBack() {
+        finish();
     }
 
 //测试机小米7.0，无法永久添加系统设置权限，需每次设置，原因不明

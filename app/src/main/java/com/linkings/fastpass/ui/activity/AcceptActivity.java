@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
@@ -31,12 +32,15 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class AcceptActivity extends BaseActivity implements IAcceptView {
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
     private AcceptPresenter mAcceptPresenter;
 
     @Override
     public void initView() {
+        mAcceptPresenter.setTitle(mToolbar);
         AcceptActivityPermissionsDispatcher.needsWithCheck(this);
     }
 
@@ -91,5 +95,10 @@ public class AcceptActivity extends BaseActivity implements IAcceptView {
     @OnNeverAskAgain({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void neverAgain() {
         LogUtil.i("neverAgain");
+    }
+
+    @Override
+    public void toBack() {
+        finish();
     }
 }

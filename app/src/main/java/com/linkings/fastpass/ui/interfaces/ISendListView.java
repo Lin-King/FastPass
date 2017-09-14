@@ -9,4 +9,5 @@ import com.linkings.fastpass.base.IBaseView;
  */
 
 public interface ISendListView extends IBaseView {
+    void toBack();
 }

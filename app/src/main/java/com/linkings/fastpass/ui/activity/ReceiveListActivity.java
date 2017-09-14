@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import com.linkings.fastpass.R;
 import com.linkings.fastpass.base.BaseActivity;
@@ -31,12 +32,15 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class ReceiveListActivity extends BaseActivity implements IReceiveListView {
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
     private ReceiveListPresenter mReceiveListPresenter;
 
     @Override
     public void initView() {
+        mReceiveListPresenter.setTitle(mToolbar);
         ReceiveListActivityPermissionsDispatcher.needsWithCheck(this);
     }
 
@@ -89,5 +93,10 @@ public class ReceiveListActivity extends BaseActivity implements IReceiveListVie
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @OnNeverAskAgain({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void neverAskAgain() {
+    }
+
+    @Override
+    public void toBack() {
+        finish();
     }
 }
