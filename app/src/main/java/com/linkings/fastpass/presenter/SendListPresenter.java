@@ -94,8 +94,12 @@ public class SendListPresenter {
             }
         });
     }
+
     public void init(RecyclerView recyclerview) {
         List<FileInfo> fileInfoList = FileInfoMG.getInstance().getFileInfoList();
+        for (int i = 0; i < fileInfoList.size(); i++) {
+            fileInfoList.get(i).setProgress(0);
+        }
         mSendListAdapter = new SendListAdapter(fileInfoList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(sendListActivity);
         recyclerview.setLayoutManager(linearLayoutManager);

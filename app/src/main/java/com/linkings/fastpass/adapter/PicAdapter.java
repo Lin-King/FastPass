@@ -24,29 +24,26 @@ import butterknife.ButterKnife;
  * Description: TOO
  */
 
-public class PicAdapter extends BaseQuickAdapter<FileInfo, PicAdapter.ViewHolder> {
+public class PicAdapter extends BaseQuickAdapter<FileInfo, BaseViewHolder> {
 
     public PicAdapter(@Nullable List<FileInfo> data) {
         super(R.layout.item_pic, data);
     }
 
     @Override
-    protected void convert(ViewHolder holder, FileInfo item) {
+    protected void convert(BaseViewHolder holder, FileInfo item) {
         if (!TextUtils.isEmpty(item.getPic())) {
-            holder.mIvIcon.setImageBitmap(BitmapUtil.base64ToBitmap(item.getPic()));
+            holder.setImageBitmap(R.id.iv_icon, BitmapUtil.base64ToBitmap(item.getPic()));
         } else {
-            holder.mIvIcon.setImageResource(R.mipmap.ic_music_note_red_100_24dp);
+            holder.setImageResource(R.id.iv_icon, R.mipmap.ic_music_note_red_100_24dp);
         }
-        holder.mTvName.setText(item.getFileName());
-        int duration = item.getDuration();
-        String time = OtherUtil.formatTime(duration);
-        holder.mTvDuration.setText(time);
+        holder.setText(R.id.tv_name, item.getFileName());
         String size = OtherUtil.getFileSize(item.getSize());
-        holder.mTvSize.setText(size);
+        holder.setText(R.id.tv_size, size);
         if (item.isOK()) {
-            holder.mIvOk.setVisibility(View.VISIBLE);
+            holder.setVisible(R.id.iv_ok, true);
         } else {
-            holder.mIvOk.setVisibility(View.GONE);
+            holder.setVisible(R.id.iv_ok, false);
         }
     }
 

@@ -189,13 +189,13 @@ public class AcceptPresenter {
                         tryCount++;
                     }
 
-                    final String finalServerIp = serverIp;
-                    acceptActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtil.show(acceptActivity, finalServerIp);
-                        }
-                    });
+//                    final String finalServerIp = serverIp;
+//                    acceptActivity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            ToastUtil.show(acceptActivity, finalServerIp);
+//                        }
+//                    });
 
                     //创建UDP通信
                     if (mDatagramSocket == null) {

@@ -24,6 +24,7 @@ import com.linkings.fastpass.base.BaseActivity;
 import com.linkings.fastpass.presenter.HomePresenter;
 import com.linkings.fastpass.ui.interfaces.IHomeView;
 import com.linkings.fastpass.utils.LogUtil;
+import com.linkings.fastpass.utils.ToastUtil;
 
 import java.util.List;
 
@@ -107,6 +108,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            ToastUtil.show(context,"第一版本!");
             return true;
         }
 
@@ -119,19 +121,19 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+//        if (id == R.id.nav_camera) {
+//            // Handle the camera action
+//        } else if (id == R.id.nav_gallery) {
+//
+//        } else if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        } else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }

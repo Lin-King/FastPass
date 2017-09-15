@@ -17,7 +17,6 @@ import com.linkings.fastpass.model.FileInfoJson;
 import com.linkings.fastpass.ui.activity.SendActivity;
 import com.linkings.fastpass.ui.activity.SendListActivity;
 import com.linkings.fastpass.utils.LogUtil;
-import com.linkings.fastpass.utils.ToastUtil;
 import com.linkings.fastpass.utils.TypeConvertUtil;
 import com.linkings.fastpass.widget.WifiAPBroadcastReceiver;
 import com.linkings.fastpass.wifitools.ApMgr;
@@ -61,6 +60,7 @@ public class SendPresenter {
             if (mSendActivity != null) {
                 switch (msg.what) {
                     case Constant.MSG_UPDATE_ADAPTER:
+                        mSendActivity.hideProgress();
                         SendListActivity.startActivity(mSendActivity);
                         break;
                 }
@@ -87,6 +87,7 @@ public class SendPresenter {
     }
 
     public void init() {
+        sendActivity.showProgress("等待对方连接热点....");
         if (ApMgr.isApOn(sendActivity)) {
             ApMgr.closeAp(sendActivity);
         }
@@ -145,13 +146,13 @@ public class SendPresenter {
             LogUtil.i("receiver get local Ip ----->>>" + localAddress);
             count++;
         }
-        final String finalLocalAddress = localAddress;
-        sendActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ToastUtil.show(sendActivity, finalLocalAddress);
-            }
-        });
+//        final String finalLocalAddress = localAddress;
+//        sendActivity.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                ToastUtil.show(sendActivity, finalLocalAddress);
+//            }
+//        });
         if (localAddress.equals("192.168.1.1")) {
             localAddress = "192.168.43.1";
         }
