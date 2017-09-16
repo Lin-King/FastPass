@@ -74,7 +74,7 @@ public class SendPresenter {
     }
 
     public void setTitle(Toolbar toolbar) {
-        toolbar.setTitle("");
+        toolbar.setTitle("等待对方连接");
 //        toolbar.setTitle(acceptActivity.intoString(R.string.music));
         toolbar.setNavigationIcon(R.mipmap.back);
         sendActivity.setSupportActionBar(toolbar);

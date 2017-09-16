@@ -79,7 +79,7 @@ public class ReceiveListPresenter {
     }
 
     public void setTitle(Toolbar toolbar) {
-        toolbar.setTitle("");
+        toolbar.setTitle("接收文件");
 //        toolbar.setTitle(acceptActivity.intoString(R.string.music));
         toolbar.setNavigationIcon(R.mipmap.back);
         receiveListActivity.setSupportActionBar(toolbar);

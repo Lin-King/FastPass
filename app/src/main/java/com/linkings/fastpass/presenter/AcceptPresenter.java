@@ -89,7 +89,7 @@ public class AcceptPresenter {
     }
 
     public void setTitle(Toolbar toolbar) {
-        toolbar.setTitle("");
+        toolbar.setTitle("连接WIFI");
 //        toolbar.setTitle(acceptActivity.intoString(R.string.music));
         toolbar.setNavigationIcon(R.mipmap.back);
         acceptActivity.setSupportActionBar(toolbar);

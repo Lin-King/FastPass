@@ -83,7 +83,7 @@ public class SendListPresenter {
     }
 
     public void setTitle(Toolbar toolbar) {
-        toolbar.setTitle("");
+        toolbar.setTitle("传送文件");
 //        toolbar.setTitle(acceptActivity.intoString(R.string.music));
         toolbar.setNavigationIcon(R.mipmap.back);
         sendListActivity.setSupportActionBar(toolbar);
